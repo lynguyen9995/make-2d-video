@@ -38,8 +38,15 @@ Stage commands from this plugin re-run one stage: `/new-video` (stages 1–4), `
 5. **Three user checkpoints:** setup choices, style choice from rendered samples, and the preview before the final render. If the user is away, take the defaults, state what was assumed, and continue.
 6. **Files are the truth.** Each video lives in `thanhhai-2d-studio/projects/<slug>/`, and `story/shots.json` owns all timing.
 
+## Channel defaults (`channel.json`)
+Before Stage 0, look for `channel.json` next to `thanhhai-2d-studio/` (the workspace folder that holds the studio) or in the
+current folder. It can hold `name`, `lang`, `aspect`, `resolution`, `fps`, `style`, `captions`, `shotsPerMin` and `music`.
+Every key present is the default for this video: skip the questions it answers (language, aspect, resolution, fps, captions,
+style pick in Stage 5) and confirm them in ONE line instead, e.g. "Kênh Tí Tò Mò: tiếng Việt, 9:16, 1080p, 30 fps, dusk, có phụ đề."
+Ask only what is still unknown (voiceover, script, title). `name` is the channel name for end cards.
+
 ## Stage 0: Video language (always first)
-Before asking anything else, creating files, installing or editing, ask exactly one question in the user's language, for example: **"Video này dùng ngôn ngữ nào? (ví dụ: Tiếng Việt, English, 日本語…)"**. Use AskUserQuestion when available. Wait for the answer, then map it to an ISO 639-1 code (`vi`, `en`, `ja`, `ko`, `es`, `pt`, `de`, `fr`, `hi`, …). If the user already named the video language earlier in this conversation, confirm it in one line instead of asking again.
+If `channel.json` gives `lang`, confirm it in the one-line summary above instead of asking. Otherwise, before asking anything else, creating files, installing or editing, ask exactly one question in the user's language, for example: **"Video này dùng ngôn ngữ nào? (ví dụ: Tiếng Việt, English, 日本語…)"**. Use AskUserQuestion when available. Wait for the answer, then map it to an ISO 639-1 code (`vi`, `en`, `ja`, `ko`, `es`, `pt`, `de`, `fr`, `hi`, …). If the user already named the video language earlier in this conversation, confirm it in one line instead of asking again.
 
 The language code drives the whole pipeline:
 - `--lang <code>` on `tools/new_project.py` (stored in `config.json` → `lang`). `tools/transcribe.py` reads it from the config.
@@ -56,15 +63,15 @@ After the language is known, ask once (AskUserQuestion when available) for:
 - **Music:** generated, the user's own file, or none. **SFX:** on or off.
 - **Title.**
 
-Don't ask about style yet. Defaults: 16:9, 1080p, 24 fps, generated music + SFX, style `dusk`.
+Don't ask about style yet. Defaults (when `channel.json` doesn't say): 16:9, 1080p, 24 fps, generated music + SFX, style `dusk`.
 
 ## Stage 2: Install or check the studio
-Follow `references/install.md`: copy `kit/` to `thanhhai-2d-studio/` in the workspace (skip if already present), install dependencies, run `python tools/verify_kit.py` and `python tools/doctor.py`, then run the example self-test. Report what was installed in one short list.
+Follow `references/install.md`: copy `kit/` to `thanhhai-2d-studio/` in the workspace (skip if already present), install dependencies, run `python tools/verify_kit.py` and `python tools/doctor.py`, then run the example self-test. Report what was installed in one short list. On Windows, if doctor finds ffmpeg only in the winget folder it writes `thanhhai-2d-studio/env.sh` and `env.ps1`; prefix render and mix commands with `source env.sh &&` (a shell started before the install doesn't see the new PATH).
 
 ## Stage 3: Project + timeline
 Run inside `thanhhai-2d-studio/`. Use `python3` where `python` isn't Python 3.
 ```bash
-python tools/new_project.py --name <slug> --voice "<voiceover path>" [--script "<script path>"] --aspect 16:9 --resolution 1080p --title "<title>" --lang <code> [--captions]
+python tools/new_project.py --name <slug> --voice "<voiceover path>" [--script "<script path>"] --aspect 16:9 --resolution 1080p --fps 24 --style dusk --title "<title>" --lang <code> [--captions]
 ```
 - Timestamped script: `python tools/parse_script.py --project projects/<slug> --script projects/<slug>/input/script.<ext>`
 - Plain script: `python tools/transcribe.py --project projects/<slug> --script projects/<slug>/input/script.txt --lang <code> --model small`. The match must be ≥ 90%; if it's lower, tell the user the script and audio differ.
@@ -73,9 +80,10 @@ python tools/new_project.py --name <slug> --voice "<voiceover path>" [--script "
 Check `timeline/transcript.txt` (its end should be near the voiceover length), then run `python tools/beats.py --project projects/<slug>` to get the beat sheet and a draft `story/shots.json`.
 
 ## Stage 4: Story breakdown
-Read `references/style-bible.md` and `references/story-breakdown.md`. Write `story/bible.md` (logline, cast with one signature colour each, locations with moods and key lights, motifs, music plan). Write `scenes/cast.js`. Rewrite `story/shots.json`: contiguous shots, cut on phrase boundaries 0.1–0.2 s early, a median of 2–3.5 s, an establishing shot per new location, and a concrete `scene` description for each. Send the user a 5–10 line plan summary and continue unless they object.
+Read `references/style-bible.md` and `references/story-breakdown.md`. Write `story/bible.md` (logline, cast with one signature colour each, locations with moods and key lights, motifs, music plan, and whether the cast is 2D stick figures or 3D characters). Write `scenes/cast.js`. Rewrite `story/shots.json`: contiguous shots, cut on phrase boundaries 0.1–0.2 s early, an establishing shot per new location, and a concrete `scene` description for each. Pacing: 9:16 shorts run **30–40 shots per minute** (median 1.5–2 s); long 16:9 explainers run 15–25 (median 2–3.5 s). `channel.json` → `shotsPerMin` overrides both. Send the user a 5–10 line plan summary and continue unless they object.
 
 ## Stage 5: Style choice
+If `channel.json` fixes `style`, use it and skip the comparison grid unless the user asks for it.
 Build the 1–2 most-used sets plus 3 representative shots (a wide shot with ≥ 2 characters, a `bigFace` close-up, a data/blueprint or 3D shot). Then render:
 ```bash
 node render.mjs --project projects/<slug> --styles dusk,midnight,golden,neon,storybook --at <t1>,<t2>,<t3> --scale 0.5
@@ -87,6 +95,11 @@ Read `references/engine-api.md` and the example scenes in `examples/reaction-tim
 1. Write `scenes/sets/<location>.js` (reusable, anchored to `GY = E.H * V(0.8, 0.68)` and `CX = E.W/2`, with walls, floor and sky extended past the frame) and `scenes/shots/NN_<name>.js` with `registerShot('<id>', {...})` for the ids in shots.json.
 2. Run `node render.mjs --project projects/<slug> --sheet --scale 0.5`. Open every `build/sheets/sheet_XX.png` and check it against the QC checklist in `references/render-qc.md`. Fix any MISSING shots, errors printed by the renderer, and composition problems.
 3. Check motion with `--stills t1,t2,t3` or `--from A --to B --scale 0.5` (writes `build/preview.mp4`).
+
+**3D cartoon characters (optional):** `kind: '3d'` shots can use rigged 3D cartoon people and a cinematic post chain
+(`rig3d: true`, `T.rig3d`, `T.char3d`, `T.face3d`, `T.pose3d`, `stage({ post })`; see engine-api.md, "3D cartoon characters").
+Decide per video in the story bible and follow style-bible.md, "2D cast or 3D cast". Light 3D rooms brighter (ambient ~2.4,
+key ~3.2, exposure ~1.2) so the dark limbs read, and expect 3D shots to render several times slower than 2D ones.
 
 Non-negotiables from the style bible:
 - Rim light on every lit figure.
@@ -110,6 +123,6 @@ Read `references/render-qc.md`.
 
 ## Defaults and judgement calls
 - When unsure about a visual, choose the more literal, more cinematic option: a close-up for emotion, an insert for objects, a blueprint for mechanisms, 3D for big spaces.
-- Keep about 15–25 shots per minute. Use 1–3 freeze-frames per video and about one 3D shot per minute.
+- Keep about 30–40 shots per minute for 9:16 shorts and 15–25 for long 16:9 explainers (or `channel.json` → `shotsPerMin`). Use 1–3 freeze-frames per video and about one 3D establishing shot per minute (a 3D-cast video uses 3D for its character shots too).
 - Keep each character's outfit colour fixed for the whole video, and keep screen direction consistent within a scene.
 - Prefer re-rendering a fixed shot range over the whole video only when the user is comfortable splicing. Otherwise re-render everything.

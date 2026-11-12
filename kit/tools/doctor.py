@@ -22,7 +22,20 @@ def ver(cmd):
 
 
 ff = shutil.which("ffmpeg") and shutil.which("ffprobe")
-ok("ffmpeg + ffprobe", bool(ff), ver(["ffmpeg", "-version"]) or "",
+ffnote = ""
+if not ff and OS == "Windows":
+    # winget installs ffmpeg under %LOCALAPPDATA%\Microsoft\WinGet\Packages and adds it to PATH only for NEW terminals,
+    # so a shell started earlier can't see it. Find it, use it for this run, and write env.sh / env.ps1 next to the studio.
+    import glob
+    hits = sorted(glob.glob(os.path.join(os.environ.get("LOCALAPPDATA", ""), "Microsoft", "WinGet", "Packages", "Gyan.FFmpeg*", "*", "bin", "ffmpeg.exe")))
+    if hits:
+        bindir = os.path.dirname(hits[-1]); os.environ["PATH"] += os.pathsep + bindir
+        ff = shutil.which("ffmpeg") and shutil.which("ffprobe")
+        unix = "/" + bindir[0].lower() + bindir[2:].replace(os.sep, "/")
+        open(os.path.join(ROOT, "env.sh"), "w", encoding="utf-8").write(f'export PATH="$PATH:{unix}"\n')
+        open(os.path.join(ROOT, "env.ps1"), "w", encoding="utf-8").write(f'$env:PATH += ";{bindir}"\n')
+        ffnote = "  (in the winget folder, not on PATH: prefix render/mix commands with `source env.sh &&`, or run `. .\\env.ps1` in PowerShell)"
+ok("ffmpeg + ffprobe", bool(ff), (ver(["ffmpeg", "-version"]) or "") + ffnote,
    {"Windows": "winget install --id Gyan.FFmpeg -e   (then open a NEW terminal)", "Darwin": "brew install ffmpeg"}.get(OS, "sudo apt-get install -y ffmpeg"))
 nv = ver(["node", "--version"])
 ok("Node.js >= 18", bool(nv) and int(nv.lstrip("v").split(".")[0]) >= 18, nv or "",

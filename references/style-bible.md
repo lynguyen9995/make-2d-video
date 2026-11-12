@@ -79,3 +79,17 @@ The logical stage is 1080×1920 (`E.vertical === true`). Use `V(landscape, verti
 - Check with `--sheet` in 9:16 before rendering. Shots designed only for 16:9 usually crop the subject.
 
 ---
+
+## 2D cast or 3D cast
+The studio has two kinds of people. Choose ONE per video in the story bible and keep it for every character shot.
+- **2D stick figures (default):** black silhouettes with rim light, `rig2d` poses, giant `bigFace` close-ups. Best for fast
+  explainers, data-heavy topics, crowds and abstract metaphors. Renders fast.
+- **3D cartoon cast (`rig3d`):** white flat heads with drawn faces, brush outline, pear bodies, noodle limbs, mittens, flat
+  patterned clothes. Best for skits and everyday situations with 2–4 people in one room (home, office, school), dialogue and
+  reactions. Avoid fast physical action, fights, precise hand grips and animal leads. Renders several times slower.
+- A 3D-cast video still uses 2D for graphics: blueprints, charts, title cards, freeze-frame labels and maps stay 2D.
+  A 2D-cast video may still use 3D establishing shots (`figure3D` stick people), never `rig3d` characters.
+- 3D cast look: same head size for everyone; differences come from clothes colour, pattern and hat. Each character keeps one
+  signature outfit colour. Faces carry the emotion (`face3d`: calm, talk, wide, shout, laugh, smug, pale, sad...), so cut to
+  a medium close-up for every reaction beat. Use `post` with `dof` on close-ups so the background softens.
+- Light 3D rooms brighter than 2D sets (ambient ~2.4, key ~3.2, exposure ~1.2): the limbs are dark and vanish on dark floors.
