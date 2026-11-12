@@ -40,6 +40,7 @@ EXPECTED = {
     "tools/beats.py": "eb42a8aef4d87584",
     "tools/common.py": "5cb9e123f452b790",
     "tools/doctor.py": "38ff51dbeb16889f",
+    "tools/join_segments.py": "b3156630a092a413",
     "tools/new_project.py": "7376e2571d0e0b62",
     "tools/parse_script.py": "5163cf3162b2579b",
     "tools/transcribe.py": "9811589c92da827e",

@@ -39,8 +39,9 @@ Stage commands from this plugin re-run one stage: `/new-video` (stages 1–4), `
 6. **Files are the truth.** Each video lives in `thanhhai-2d-studio/projects/<slug>/`, and `story/shots.json` owns all timing.
 
 ## Channel defaults (`channel.json`)
-Before Stage 0, look for `channel.json` next to `thanhhai-2d-studio/` (the workspace folder that holds the studio) or in the
-current folder. It can hold `name`, `lang`, `aspect`, `resolution`, `fps`, `style`, `captions`, `shotsPerMin` and `music`.
+Before Stage 0, look for `channel.json` next to `thanhhai-2d-studio/` (the workspace folder that holds the studio), then in the
+current folder, then in this skill's base directory (the copy that travels with the skill; on a new machine copy it next to
+the studio once it is installed). It can hold `name`, `lang`, `aspect`, `resolution`, `fps`, `style`, `captions`, `shotsPerMin` and `music`.
 Every key present is the default for this video: skip the questions it answers (language, aspect, resolution, fps, captions,
 style pick in Stage 5) and confirm them in ONE line instead, e.g. "Kênh Tí Tò Mò: tiếng Việt, 9:16, 1080p, 30 fps, dusk, có phụ đề."
 Ask only what is still unknown (voiceover, script, title). `name` is the channel name for end cards.
@@ -55,7 +56,11 @@ The language code drives the whole pipeline:
 
 ## Stage 1: Intake
 After the language is known, ask once (AskUserQuestion when available) for:
-- **Voiceover file** (required).
+- **Voiceover file** (required). No recording yet? Make one with VieNeu (if its MCP tools are connected): synthesize ONE clip per
+  sentence (`01.wav`, `02.wav`, … in a folder), write the sentences one per line in `sentences.txt` (optional `|0.8` pause or
+  `|cham` slow-down markers, emotion tags like [cười] stay in the line), then
+  `python -I tools/join_segments.py <clip_dir> sentences.txt voiceover.wav`. It joins the clips with fixed pauses (VieNeu merges
+  short sentences and drops pauses when given a whole script) and writes `voiceover.wav.script.txt`, the clean text to pass as `--script`.
 - **Script:** timestamped (SRT/VTT/JSON/TXT with `[mm:ss]`), plain text (best: aligned to the audio, keeping exact wording), or none (transcribed).
 - **Aspect:** 16:9 or 9:16.
 - **Resolution:** 720p / 1080p (recommended) / 1440p / 2160p (4K). Mention that higher resolutions take much longer to render.

@@ -12,6 +12,8 @@ Private repository. The studio kit has no licence of its own, so do not make thi
 | `references/` | Style bible, story breakdown, engine API, sound design, render QC, install |
 | `kit/` | The studio that gets installed into a workspace as `thanhhai-2d-studio/` |
 | `kit/engine/rig3d.js`, `rig3d-cast.js`, `post3d.js` | Add-on: 3D cartoon characters and cinematic post for `kind: '3d'` shots |
+| `channel.json` | Channel defaults (name, language, 9:16, 30 fps, dusk, captions, pacing); copy next to the studio on a new machine |
+| `kit/tools/join_segments.py` | Joins per-sentence VieNeu clips into one voiceover with fixed pauses |
 | `kit/examples/rig3d-test/` | Two-shot reference project for the 3D add-on |
 
 ## Install
