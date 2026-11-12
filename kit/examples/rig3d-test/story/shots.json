@@ -1,0 +1,3 @@
+{ "title": "Thử nhân vật 3D", "duration": 6, "shots": [
+  { "id": "a1", "start": 0, "end": 3, "line": "", "scene": "wide room at dusk, two 3D characters, slow push-in" },
+  { "id": "a2", "start": 3, "end": 6, "line": "", "scene": "close-up boy, wide-eyed, shallow DOF", "in": { "type": "cut" } } ] }
