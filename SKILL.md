@@ -11,7 +11,7 @@ description: >
   final MP4 in 16:9 or 9:16 at 720p to 4K. Three drawing styles: cinematic stick figures (default), a 3D cartoon
   cast, or the toon cast (outlined flat 2D cartoon with round heads, comic text, visual gags and caricatures).
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
   author: Thanh Hai Learn AI
 ---
 
@@ -117,7 +117,10 @@ Read `references/engine-api.md` and the example scenes in `examples/reaction-tim
 
 **Toon cast:** `import * as TO from '/engine/toon.js'`, call `TO.use(g, t)` first in every `draw()`/`overlay()`, build sets and
 characters from the library (`TO.classroom`, `TO.office1995Back/Front`, `TO.keynote`, `TO.kid`, `TO.scholar`, `TO.jensenToon`…)
-and ADD new reusable characters/sets/props to `engine/toon.js` instead of one-off code. Caricatures of real people: look at real
+and ADD new reusable characters/sets/props to the toon library instead of one-off code. Characters, 31 front poses, side walk/run, 19
+expressions: `engine/toon-rig.js` (`TR.character(id, x, y, s, { t, view, pose, expr, talk })`); props and sets: `engine/toon-props.js`.
+Before drawing anything new, render and look at `examples/toon-catalog` (everything that exists); after adding something new, add it to
+the catalog (style-bible-toon.md → "Making NEW things"). The three styles are independent: toon shots never import rig2d/rig3d. Caricatures of real people: look at real
 photos first, keep the head simple and carry the likeness with hair + glasses + outfit, label the name, no invented quotes, no
 logos (style-bible-toon.md). 3D hero props: `engine/toon3d.js` (`chip3d`, `toonSky`, `project`) in a `kind: '3d'` shot, with the
 2D characters drawn in `overlay()`.
