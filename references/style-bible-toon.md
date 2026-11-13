@@ -3,7 +3,12 @@
 Use this file instead of `style-bible.md` when the video's cast is **toon** (`channel.json` / `config.json` → `"cast": "toon"`).
 Camera, pacing, editing, sound and the pipeline stay the same as the other styles; only the look changes.
 Engine: `engine/toon.js` (2D characters, wardrobe, props, sets, text) and `engine/toon3d.js` (toon-shaded 3D props with glow).
-Reference project: `examples/toon-demo/` (classroom, handwriting card, office 1995, split screen, 3D chip, caricatures).
+Reference projects: `examples/toon-demo/` (classroom, handwriting card, office 1995, split screen, 3D chip, caricatures) and
+`examples/toon-catalog/` (**everything the toon cast has**: poses, side cycles, expressions, cast, props, sets).
+
+**Independence:** the toon cast is self-contained. Toon shots import only `toon.js`, `toon-rig.js`, `toon-props.js`, `toon3d.js`
+(+ `core.js` helpers and `ui2d.js` captions if needed). Never import `rig2d.js` / `rig3d.js` / `rig3d-cast.js` or reuse stick-figure
+poses or 3D-cast characters in a toon video, and never use toon assets in the other two styles.
 
 ## The look in one paragraph
 Bright, readable explainer cartoon in the spirit of business/finance explainer channels: **round skin-tone heads**, bean-shaped
@@ -43,6 +48,39 @@ the same outlines (wood panels, chalkboards, windows, stages), lit by a few soft
 - Ready-made: `TO.jensenToon(x, y, t)` (silver hair with a jagged side-part fringe, small rectangular glasses, black tee +
   biker jacket, arms crossed) and `TO.gatesToon(x, y, t)` (neat salt-and-pepper hair, bold dark glasses, big smile, V-neck sweater
   over a shirt, waving).
+
+## Characters, poses and expressions (`import * as TR from '/engine/toon-rig.js'`)
+- **Draw a character:** `TR.character(id | spec, x, y, s, { t, view: 'front'|'side', facing: 1|-1, pose, expr, talk, lookX, lookY, prop })`.
+  Cast ids (`TR.CAST`): `nhoc, ongdo, banker, biker, jensen, gates, man, woman, student`. A spec is plain data
+  `{ skin, hair, hat, glasses, facial, eyes:'dot'|'big', cheeks, kid, outfit:{type:'tee'|'jacket'|'sweater'|'suit'|'robe'|'dress', color, ...}, sleeve, shoe }`,
+  so a new person = a new spec (`{ ...TR.CAST.man, hair: 'bob', outfit: { type: 'suit', color: '#333' } }`).
+  Hair: `spiky silver neat bald baldRing short bob bun whiteSides`; hats: `khanxep cap`; glasses: `small bold round sun`; facial: `mustache goatee whiteBeard`.
+- **Front poses (31, `TR.POSE_IDS`):** stand relaxed handsHips wave waveBoth point pointUp pointDown explain present shrug cheer crossArms
+  handsBehind think facepalm handsOnHead shocked scared angry sad phone holdFront holdUp sit sitThink crouch jump fall bow victory.
+  Animate with `TR.posesAt(t, [[0,'stand'],[1.2,'wave']], 0.3)`, `TR.breathe(pose, t)`, `TR.walkFront(phase)` (walk in place, move x yourself).
+- **Side view (true profile):** `TR.walk(phase)`, `TR.run(phase)` (phase = t·2π·~0.9; move x ≈150/s walk, ≈420/s run at s=1) and
+  `TR.SIDE_POSES`: stand point hold reach sit sad jump think (`posesAt(..., side=true)`).
+- **Expressions (19, `TR.EXPRESSIONS`):** neutral smile happy grin laugh sad cry angry scared shocked surprised worried smug thinking
+  sleepy confused determined wink love. `talk` (0..1) opens the mouth on the beat; blinking is automatic.
+- **Close-ups:** `TR.portrait(id, x, y, s, { expr, view, talk })` draws the head only (reaction shots, thumbnails).
+- **Props in hands:** `prop: { R: g => TP.phone(0, 0, 0.6) }` (front, L/R) or `{ N, F }` (side).
+
+## Props and sets (`import * as TP from '/engine/toon-props.js'`)
+- **Props (20):** moneyStack coin goldBar moneyBag phone laptop chartBoard(trend up|down|crash) arrow briefcase cup newspaper lightbulb
+  trophy piggy speech thought house rocket bomb gear — plus `TO.tag`, `TO.chip2d`, `TO.jacket`.
+- **Sets:** `TP.street(t, {night})`, `TP.livingRoom`, `TP.cafe`, `TP.tradingFloor(t, {trend})` — plus `TO.classroom`, `TO.office1995Back/Front`, `TO.keynote`.
+  Each returns `{ GY }` (ground line for feet).
+
+## Making NEW things in a video (poses, expressions, characters, props, sets)
+New videos will need things that don't exist yet. Make them in code, never with image generators, and make them reusable:
+1. Open the catalog first (`node render.mjs --project examples/toon-catalog --sheet`, read the PNGs) and reuse what exists.
+2. **New pose:** add an entry to `POSES` (front) or `SIDE_POSES` in `toon-rig.js` using the angle convention at the top of the file;
+   check it in the catalog sheet. **New expression:** add to `EX` (+ the name to `EXPRESSIONS`).
+3. **New character:** add a spec to `CAST` (reuse hair/glasses/outfit types, or add a new hair/hat/glasses/outfit type with BOTH
+   `front` and `side` drawings). Public figures follow the caricature rules below.
+4. **New prop/set:** add a function to `toon-props.js` (outlines with `fs`, colours flat, returns `{ GY }` for sets) and its name to `PROPS`/`SETS`.
+5. Add the new item to the matching shot in `examples/toon-catalog/scenes/shots/catalog.js`, re-render the sheet and look at it.
+6. Keep one-off drawing inside shot files only for things that will never come back.
 
 ## API cheat sheet (`import * as TO from '/engine/toon.js'`)
 - **Primitives:** `use part fs rr ell line curve glow shade head ikArm hand eye sweat rng`, constants `INK OUT F`.
