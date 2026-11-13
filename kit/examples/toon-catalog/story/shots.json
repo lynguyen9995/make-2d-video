@@ -1,0 +1,9 @@
+{ "title": "Toon Catalog", "duration": 14, "shots": [
+ {"id": "c001", "start": 0, "end": 1, "line": "", "scene": "front pose library"},
+ {"id": "c002", "start": 1, "end": 2, "line": "", "scene": "side view: walk + run cycles and side poses"},
+ {"id": "c003", "start": 2, "end": 3, "line": "", "scene": "expressions (big-eye kid and dot-eye adult)"},
+ {"id": "c004", "start": 3, "end": 4, "line": "", "scene": "cast lineup front + side"},
+ {"id": "c005", "start": 4, "end": 5, "line": "", "scene": "props"},
+ {"id": "c006", "start": 5, "end": 6, "line": "", "scene": "sets"},
+ {"id": "c007", "start": 6, "end": 14, "line": "", "scene": "motion test: side walk on the street, stop, turn to camera, talk, sit", "in": {"type": "cut"}}
+] }

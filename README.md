@@ -18,6 +18,8 @@ Private repository. The studio kit has no licence of its own, so do not make thi
 | `kit/engine/toon.js`, `toon3d.js` | Toon cast (3rd drawing style): outlined flat 2D cartoon characters, wardrobe, props, sets, comic text, caricatures; toon-shaded 3D props with glow |
 | `references/style-bible-toon.md` | Look and rules for the toon cast |
 | `kit/examples/toon-demo/` | Six-shot reference project for the toon cast |
+| `kit/engine/toon-rig.js`, `toon-props.js` | Toon cast library: characters (front + side), 31 poses, walk/run, 19 expressions, 20 props, 4 more sets |
+| `kit/examples/toon-catalog/` | Catalog of everything the toon cast has (render with `--sheet`) + a motion test |
 
 ## Install
 Copy this folder to `~/.claude/skills/make-2d-video/`, then ask Claude Code to "làm video 2D" / "make a 2D video".

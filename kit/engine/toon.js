@@ -1,6 +1,8 @@
 // engine/toon.js — the "toon" cast: outlined flat-colour 2D cartoon (round skin-tone heads, bean bodies, stick limbs,
 // thick dark outlines, hand-drawn line boil). Third drawing style next to the stick figures (rig2d) and the 3D cast (rig3d).
 //
+// Toon is a fully independent cast: it never imports rig2d.js / rig3d.js. Characters + poses + expressions: toon-rig.js;
+// extra props and sets: toon-props.js; catalog of everything: examples/toon-catalog.
 // Usage inside a 2D shot:   import * as TO from '/engine/toon.js';
 //   registerShot('s001', { draw(g, t, info) { TO.use(g, t); TO.classroom(t); TO.kid(640, 900, 1.25, {...}); } });
 // TO.use(g, t) MUST be called first in every draw(): it binds the canvas and sets the line-boil clock.
@@ -13,6 +15,7 @@ let g = null, BOIL = 0;
 export const INK = '#141218', OUT = 6;
 export const F = { hand: 'Patrick Hand', comic: 'Nunito' };
 export function use(ctx, t = 0) { g = ctx; BOIL = Math.floor(t * 8); return g; }
+export const ctx = () => g;   // for sibling toon modules (toon-rig.js, toon-props.js)
 
 // ---------------- primitives ----------------
 export function rng(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return ((s >>> 0) % 10000) / 10000; }; }
@@ -174,10 +177,9 @@ export function bikerUncle(x, y, t) { g.save(); g.translate(x, y); const SK = '#
 // ---- Caricatures of public figures. Rule: SIMPLE round head + tiny features; likeness comes from the silhouette
 //      (hair shape, glasses, outfit). Never put invented quotes in their mouths; no real company logos.
 // Tech-CEO caricature (silver hair with a jagged side-part fringe, small rectangular glasses, black tee + biker jacket, arms crossed)
-export function jensenToon(x, y, t, o = {}) { g.save(); g.translate(x, y); const SK = '#efc89a', talk = o.talk ?? (t > 1.0 && t < 3.4 ? Math.abs(Math.sin(t * 11)) : 0), br = Math.sin(t * 2.2) * 2;
-  legs(); g.translate(0, br * 0.3);
-  g.save(); g.translate(0, -326); g.scale(1.02, 1.0); jacket(t, { tee: true, sheen: (t * 0.3 + 0.4) % 1.3 }); g.restore();
-  sleeve([[-104, -296], [-126, -200], [64, -206]]); hand(78, -208, 17, SK); sleeve([[104, -296], [128, -196], [-58, -196]]); hand(-72, -196, 17, SK);
+// Jensen caricature head only, centred at (0,0) (head radius 92). talk 0..1
+export function jensenHead(t, talk = 0) { g.save(); g.translate(0, 430);
+  const SK = '#efc89a';
   const cx = 0, cy = -430, R = 92, sw = Math.sin(t * 1.7) * 1.2; head(cx, cy, R, SK);
   const PX = cx - 34; const cap = () => { g.beginPath(); g.moveTo(cx - 90, cy - 8); g.bezierCurveTo(cx - 110, cy - 104, cx - 44, cy - 146 + sw, cx + 18, cy - 142 + sw); g.bezierCurveTo(cx + 96, cy - 138 + sw, cx + 124, cy - 62, cx + 94, cy + 8); g.quadraticCurveTo(cx + 80, cy - 36, cx + 52, cy - 56); g.quadraticCurveTo(cx + 10, cy - 78, PX + 6, cy - 70); g.lineTo(PX, cy - 40); g.lineTo(PX - 8, cy - 58); g.lineTo(PX - 16, cy - 34); g.lineTo(PX - 24, cy - 56); g.lineTo(PX - 34, cy - 30); g.lineTo(PX - 42, cy - 52); g.quadraticCurveTo(cx - 84, cy - 40, cx - 90, cy - 8); g.closePath(); };
   cap(); g.fillStyle = '#cfd0d4'; g.fill(); g.save(); cap(); g.clip();
@@ -188,6 +190,12 @@ export function jensenToon(x, y, t, o = {}) { g.save(); g.translate(x, y); const
   const blink = (t % 3.3) > 3.18; for (const ex of [-28, 28]) { g.beginPath(); g.roundRect(cx + ex - 20, cy - 2, 40, 24, 3); g.fillStyle = 'rgba(255,255,255,.25)'; g.fill(); g.lineWidth = 3.6; g.strokeStyle = INK; g.stroke(); if (blink) line([[cx + ex - 8, cy + 10], [cx + ex + 8, cy + 10]], 3.5); else { ell(cx + ex + 2, cy + 10, 6, 7); g.fillStyle = INK; g.fill(); } }
   line([[cx - 8, cy + 8], [cx + 8, cy + 8]], 3.6); line([[cx - 48, cy + 6], [cx - 88, cy]], 3.6); line([[cx + 48, cy + 6], [cx + 88, cy]], 3.6);
   curve([cx - 14, cy + 48], [cx + 2, cy + 56 + talk * 6], [cx + 18, cy + 46], 4, INK); g.restore(); }
+export function jensenToon(x, y, t, o = {}) { g.save(); g.translate(x, y); const SK = '#efc89a', talk = o.talk ?? (t > 1.0 && t < 3.4 ? Math.abs(Math.sin(t * 11)) : 0), br = Math.sin(t * 2.2) * 2;
+  legs(); g.translate(0, br * 0.3);
+  g.save(); g.translate(0, -326); g.scale(1.02, 1.0); jacket(t, { tee: true, sheen: (t * 0.3 + 0.4) % 1.3 }); g.restore();
+  sleeve([[-104, -296], [-126, -200], [64, -206]]); hand(78, -208, 17, SK); sleeve([[104, -296], [128, -196], [-58, -196]]); hand(-72, -196, 17, SK);
+  g.save(); g.translate(0, -430); jensenHead(t, talk); g.restore();
+  g.restore(); }
 // Software-founder caricature (neat short salt-and-pepper hair, bold dark glasses, big smile, V-neck sweater over a shirt, waving)
 export function gatesToon(x, y, t, o = {}) { g.save(); g.translate(x, y); const SK = '#f2c9a6', talk = o.talk ?? (t > 2.0 && t < 4.2 ? Math.abs(Math.sin(t * 12)) : 0), br = Math.sin(t * 2.2 + 1) * 2, wave = Math.sin(t * 8);
   legs('#3a2a22'); g.translate(0, br * 0.3);
