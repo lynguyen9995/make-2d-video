@@ -51,7 +51,8 @@ export function stage(o = {}) {
   const w = Math.round(E.W * E.PX), h = Math.round(E.H * E.PX);
   const composer = new EffectComposer(R, new THREE.WebGLRenderTarget(w, h, { samples: 4, type: THREE.HalfFloatType }));
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(w, h), o.bloom ?? (st.grade.bloom ?? 0.55) * (o.post ? 0.3 : 0.7), 0.5, o.bloomThreshold ?? (o.post ? 1.0 : 0.88));   // post: white 3D heads must not bloom composer.addPass(bloom); composer.addPass(new OutputPass());
+  const bloom = new UnrealBloomPass(new THREE.Vector2(w, h), o.bloom ?? (st.grade.bloom ?? 0.55) * (o.post ? 0.3 : 0.7), 0.5, o.bloomThreshold ?? (o.post ? 1.0 : 0.88));   // post: white 3D heads must not bloom
+  composer.addPass(bloom); composer.addPass(new OutputPass());
   // o.post: true | 'cinematic' | 'warm' | 'cool' | 'neutral' | { preset, exp, sat, con, warm, teal, rays, sun, vignette, grain, dof:{focus, aperture, maxblur}, smaa }
   const post = o.post ? cinematic(composer, { scene, camera, w, h }, o.post === true ? {} : o.post) : null;
   const exposure = o.exposure ?? 1.0;
