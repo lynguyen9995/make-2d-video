@@ -1,1 +1,13 @@
-{}
+{
+"title": "Toon Demo",
+"duration": 29.5,
+"shots": [
+ {"id": "t001", "start": 0, "end": 5.0, "line": "Tại sao trời lại xanh?", "scene": "classroom: Nhóc waves then points up, ? pops, scholar strokes beard", "in": {"type": "cut"}, "sfx": [{"at": 1.9, "name": "pop", "gain": -10}]},
+ {"id": "t002", "start": 5.0, "end": 7.0, "line": "Vì sao nhỉ...", "scene": "black card, handwriting reveal", "in": {"type": "dip", "dur": 0.5}},
+ {"id": "t003", "start": 7.0, "end": 13.5, "line": "", "scene": "office 1995: money drains to zero, phone rings, banker panics", "in": {"type": "cut"}, "sfx": [{"at": 3.6, "name": "impact", "gain": -12}]},
+ {"id": "t004", "start": 13.5, "end": 18.5, "line": "", "scene": "split screen: biker uncle wears the jacket (300K) vs the same jacket on a hanger (225K), RỚT GIÁ!", "in": {"type": "whip", "dir": 1}},
+ {"id": "t005", "start": 18.5, "end": 24.5, "line": "", "scene": "3D glowing chip cracks while Nhóc holds it up", "in": {"type": "flash", "dur": 0.4}, "sfx": [{"at": 1.1, "name": "impact", "gain": -8}]},
+ {"id": "t006", "start": 24.5, "end": 29.5, "line": "", "scene": "keynote stage: two public-figure caricatures side by side", "in": {"type": "fade", "dur": 0.5}}
+],
+"music": [ {"start": 0, "end": 29.5, "mood": "playful", "intensity": 0.4} ]
+}
