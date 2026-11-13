@@ -48,5 +48,11 @@ export const STYLES = {
     grade: { contrast: 0.92, sat: 0.92, lift: [0.07, 0.055, 0.085], gamma: [1.12, 1.1, 1.06], gain: [1.06, 1.03, 0.98], vignette: 0.3, grain: 0.07, bloom: 0.45 },
     moods: { night: { sky: ['#2a2f5a', '#4a4f80', '#6a6aa0'], wall: '#3e4266' }, dusk: { sky: ['#6a5a90', '#c08aa8', '#f2b0a0', '#fbe0b8'] } },
   },
+  paper: {
+    name: 'Toon Paper', desc: 'For the toon cast (engine/toon.js): neutral grade so flat colours stay true, light paper grain, soft vignette, gentle bloom for glowing props.',
+    ink: '#141218', inkFar: '#3a3540', feature: '#fffaf0', rimWidth: 0, ui: { ...UI, accent: '#ff5a4e', gold: '#ffd23f' },
+    grade: { contrast: 1.0, sat: 1.0, lift: [0, 0, 0], gamma: [1, 1, 1], gain: [1, 1, 1], vignette: 0.38, grain: 0.04, bloom: 0.6 },
+    moods: {},
+  },
 };
 export const STYLE_IDS = Object.keys(STYLES);

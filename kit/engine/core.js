@@ -85,7 +85,7 @@ export function fillRect(g, x, y, w, h, fill) { g.fillStyle = fill; g.fillRect(x
 export function backdrop(g, colors, area = [-E.W, -E.H, E.W * 3, E.H * 3]) { g.fillStyle = linGrad(g, 0, 0, 0, E.H, colors); g.fillRect(...area); }
 
 // ---------- text ----------
-export const FONTS = { title: 'Fredoka', ui: 'Nunito', serif: 'Playfair Display' };
+export const FONTS = { title: 'Fredoka', ui: 'Nunito', serif: 'Playfair Display', hand: 'Patrick Hand' };
 export function text(g, str, x, y, o = {}) {
   const { size = 48, font = FONTS.title, weight = 700, color = '#fff', align = 'center', base = 'middle', glow: gl = 0, glowColor = 'rgba(255,140,60,.8)', spacing = 0, alpha: a = 1, stroke = 0, strokeColor = '#000', italic = false } = o;
   g.save(); g.globalAlpha *= a; g.font = `${italic ? 'italic ' : ''}${weight} ${size}px "${font}"`; g.textAlign = align; g.textBaseline = base;

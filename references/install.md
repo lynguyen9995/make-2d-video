@@ -10,7 +10,7 @@ The studio is a small Node + Python toolkit that ships inside this plugin, in th
 - Use the user's connected project folder if there is one, otherwise the current working directory. Create `thanhhai-2d-studio/` there.
 - If `thanhhai-2d-studio/` already exists with `render.mjs` inside, it's already installed. Skip to step 4 (doctor), and never overwrite the user's `projects/` folder.
 - Copy all of `kit/` into it: `cp -r "<kit>/." thanhhai-2d-studio/` (bash) or `Copy-Item -Recurse "<kit>\*" thanhhai-2d-studio\` (PowerShell).
-- Run `python tools/verify_kit.py` inside `thanhhai-2d-studio/`. It must report 37/37. If anything is missing or mismatched, copy those files again.
+- Run `python tools/verify_kit.py` inside `thanhhai-2d-studio/`. It must report 47/47. If anything is missing or mismatched, copy those files again.
 
 ## 3. Install dependencies
 Tell the user, in one short list, what is being installed and why: ffmpeg (video/audio encoding), Node.js packages (renderer, Three.js, fonts), a headless Chromium (draws the frames), and numpy, scipy and faster-whisper (sound synthesis and timestamps).
@@ -26,7 +26,7 @@ Tell the user, in one short list, what is being installed and why: ffmpeg (video
 
 ## 4. Check and self-test
 1. `python tools/doctor.py`. Use `python3` where `python` isn't Python 3, and `py -3` on some Windows setups. Repeat until every line is OK. `python tools/doctor.py --install` runs the npm, playwright and pip fixes automatically.
-2. Self-test: `node render.mjs --project examples/reaction-time --sheet --scale 0.3`. It should write `examples/reaction-time/build/sheets/sheet_01.png` with 14 finished frames (café scenes, giant faces, a 3D orbit, blueprint charts, a title card) and print no errors. Open the PNG to confirm, then delete `examples/reaction-time/build/`.
+2. Self-test: `node render.mjs --project examples/reaction-time --sheet --scale 0.3`. It should write `examples/reaction-time/build/sheets/sheet_01.png` with 14 finished frames (café scenes, giant faces, a 3D orbit, blueprint charts, a title card) and print no errors. Open the PNG to confirm, then delete `examples/reaction-time/build/`. For the toon cast, also run `node render.mjs --project examples/toon-demo --sheet --scale 0.3` (6 frames: classroom, handwriting card, office, split screen, 3D chip, caricatures).
 3. Whisper downloads its model the first time it runs (~75 MB for `base`, ~500 MB for `small`). That needs internet access to huggingface.co.
 
 ## Notes

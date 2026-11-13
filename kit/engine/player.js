@@ -30,6 +30,8 @@ async function loadFonts(lang) {
   }
   for (const w of ['800', '900']) for (const sub of ['latin', 'latin-ext', 'vietnamese']) F.push(['Nunito', w, nun(w, sub), 'normal', sub]);
   for (const sub of ['latin', 'latin-ext', 'vietnamese']) F.push(['Playfair Display', '900', `playfair-display/files/playfair-display-${sub}-900-italic.woff2`, 'italic', sub]);
+  // toon cast (engine/toon.js): Patrick Hand for handwriting, Nunito 900 italic for comic pop text (both cover Vietnamese)
+  for (const sub of ['latin', 'latin-ext', 'vietnamese']) { F.push(['Patrick Hand', '400', `patrick-hand/files/patrick-hand-${sub}-400-normal.woff2`, 'normal', sub]); F.push(['Nunito', '900', nun('900', sub, 'italic'), 'italic', sub]); }
   for (const [fam, w, file, style, sub] of F) {
     try { const ff = new FontFace(fam, `url(/node_modules/@fontsource/${file})`, { weight: w, style, unicodeRange: UR[sub] }); await ff.load(); document.fonts.add(ff); }
     catch (e) { console.log('font missing', fam, w, sub); }
