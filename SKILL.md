@@ -4,13 +4,14 @@ description: >
   This skill should be used when the user wants a narrated animated video in the Thanh Hai Learn AI 2D style
   (cinematic stick figures with rim light, moody 2.5D sets, giant face close-ups, freeze-frames,
   data overlays, blueprint diagrams and low-poly 3D shots), e.g. "make a 2D video from this voiceover",
-  "animate my script", "turn this narration into a stick figure video", "make a What If video",
+  "animate my script", "turn this narration into a stick figure video", "make a What If video", "make a cartoon explainer like Paper Billions",
   "create an animated explainer from my audio", or "do the whole video", and Vietnamese requests such as
   "làm video 2D", "làm video người que", "dựng video hoạt hình từ giọng đọc", "làm video What If". It runs the full pipeline:
   install, timestamps (Whisper), story breakdown, style choice, scene building, rendering, music, SFX and
-  final MP4 in 16:9 or 9:16 at 720p to 4K.
+  final MP4 in 16:9 or 9:16 at 720p to 4K. Three drawing styles: cinematic stick figures (default), a 3D cartoon
+  cast, or the toon cast (outlined flat 2D cartoon with round heads, comic text, visual gags and caricatures).
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
   author: Thanh Hai Learn AI
 ---
 
@@ -22,6 +23,7 @@ Turn a voiceover (plus an optional script) into a finished MP4 where every frame
 - `kit/`: the tested studio (renderer, engine, tools, audio, the `examples/reaction-time` reference project). Install it into the workspace as `thanhhai-2d-studio/` (see `references/install.md`).
 - `references/install.md`: install, dependency table, doctor, self-test.
 - `references/style-bible.md`: **the look** (characters, sets, light, camera, editing, graphics, 9:16 rules, don'ts). Read it fully before designing any shot.
+- `references/style-bible-toon.md`: the look for the **toon cast** (`cast: "toon"`). When the cast is toon, follow it instead of the parts of style-bible.md that conflict (rim light, no outlines, black silhouettes).
 - `references/story-breakdown.md`: writing `story/bible.md` and `story/shots.json`, plus pacing rules.
 - `references/engine-api.md`: the scene API, config and shots.json schemas, and the three-kit reference.
 - `references/sound-design.md`: the music plan, SFX library, ambience and levels.
@@ -41,10 +43,20 @@ Stage commands from this plugin re-run one stage: `/new-video` (stages 1–4), `
 ## Channel defaults (`channel.json`)
 Before Stage 0, look for `channel.json` next to `thanhhai-2d-studio/` (the workspace folder that holds the studio), then in the
 current folder, then in this skill's base directory (the copy that travels with the skill; on a new machine copy it next to
-the studio once it is installed). It can hold `name`, `lang`, `aspect`, `resolution`, `fps`, `style`, `captions`, `shotsPerMin` and `music`.
+the studio once it is installed). It can hold `name`, `lang`, `aspect`, `resolution`, `fps`, `style`, `cast` (`stick` | `3d` | `toon`), `captions`, `shotsPerMin` and `music`.
 Every key present is the default for this video: skip the questions it answers (language, aspect, resolution, fps, captions,
 style pick in Stage 5) and confirm them in ONE line instead, e.g. "Kênh Tí Tò Mò: tiếng Việt, 9:16, 1080p, 30 fps, dusk, có phụ đề."
 Ask only what is still unknown (voiceover, script, title). `name` is the channel name for end cards.
+
+## The three drawing styles (pick ONE cast per video)
+| `cast` | Look | Engine | Style bible |
+|---|---|---|---|
+| `stick` (default) | Black stick figures with rim light, moody cinematic 2.5D sets | `rig2d.js` (+ `three-kit.js` for 3D establishing shots) | `style-bible.md` |
+| `3d` | 3D cartoon cast: white flat heads, pear bodies, noodle limbs | `rig3d.js`, `rig3d-cast.js` (`kind: '3d'`, `rig3d: true`) | `style-bible.md` → "2D cast or 3D cast" |
+| `toon` | Outlined flat 2D cartoon: round skin-tone heads, bean bodies, stick limbs, thick outlines, line boil, comic text, visual gags, caricatures of public figures; optional toon-shaded 3D hero props with glow | `toon.js`, `toon3d.js` | `style-bible-toon.md` |
+
+`channel.json` → `cast` decides; otherwise ask once in Stage 1 (one line per style). For `toon` the default colour style is `paper`
+(the cinematic grades also work but darken the flat colours). Study `examples/toon-demo/` before writing toon shots.
 
 ## Stage 0: Video language (always first)
 If `channel.json` gives `lang`, confirm it in the one-line summary above instead of asking. Otherwise, before asking anything else, creating files, installing or editing, ask exactly one question in the user's language, for example: **"Video này dùng ngôn ngữ nào? (ví dụ: Tiếng Việt, English, 日本語…)"**. Use AskUserQuestion when available. Wait for the answer, then map it to an ISO 639-1 code (`vi`, `en`, `ja`, `ko`, `es`, `pt`, `de`, `fr`, `hi`, …). If the user already named the video language earlier in this conversation, confirm it in one line instead of asking again.
@@ -68,7 +80,9 @@ After the language is known, ask once (AskUserQuestion when available) for:
 - **Music:** generated, the user's own file, or none. **SFX:** on or off.
 - **Title.**
 
-Don't ask about style yet. Defaults (when `channel.json` doesn't say): 16:9, 1080p, 24 fps, generated music + SFX, style `dusk`.
+- **Cast** (drawing style): stick / 3d / toon, unless `channel.json` gives `cast`.
+
+Don't ask about the colour style yet. Defaults (when `channel.json` doesn't say): 16:9, 1080p, 24 fps, generated music + SFX, cast `stick`, style `dusk` (`paper` for toon).
 
 ## Stage 2: Install or check the studio
 Follow `references/install.md`: copy `kit/` to `thanhhai-2d-studio/` in the workspace (skip if already present), install dependencies, run `python tools/verify_kit.py` and `python tools/doctor.py`, then run the example self-test. Report what was installed in one short list. On Windows, if doctor finds ffmpeg only in the winget folder it writes `thanhhai-2d-studio/env.sh` and `env.ps1`; prefix render and mix commands with `source env.sh &&` (a shell started before the install doesn't see the new PATH).
@@ -85,7 +99,7 @@ python tools/new_project.py --name <slug> --voice "<voiceover path>" [--script "
 Check `timeline/transcript.txt` (its end should be near the voiceover length), then run `python tools/beats.py --project projects/<slug>` to get the beat sheet and a draft `story/shots.json`.
 
 ## Stage 4: Story breakdown
-Read `references/style-bible.md` and `references/story-breakdown.md`. Write `story/bible.md` (logline, cast with one signature colour each, locations with moods and key lights, motifs, music plan, and whether the cast is 2D stick figures or 3D characters). Write `scenes/cast.js`. Rewrite `story/shots.json`: contiguous shots, cut on phrase boundaries 0.1–0.2 s early, an establishing shot per new location, and a concrete `scene` description for each. Pacing: 9:16 shorts run **30–40 shots per minute** (median 1.5–2 s); long 16:9 explainers run 15–25 (median 2–3.5 s). `channel.json` → `shotsPerMin` overrides both. Send the user a 5–10 line plan summary and continue unless they object.
+Read `references/style-bible.md` (or `references/style-bible-toon.md` for the toon cast) and `references/story-breakdown.md`. Write `story/bible.md` (logline, cast with one signature colour each, locations with moods and key lights, motifs, music plan, and whether the cast is 2D stick figures or 3D characters). Write `scenes/cast.js`. Rewrite `story/shots.json`: contiguous shots, cut on phrase boundaries 0.1–0.2 s early, an establishing shot per new location, and a concrete `scene` description for each. Pacing: 9:16 shorts run **30–40 shots per minute** (median 1.5–2 s); long 16:9 explainers run 15–25 (median 2–3.5 s). `channel.json` → `shotsPerMin` overrides both. Send the user a 5–10 line plan summary and continue unless they object.
 
 ## Stage 5: Style choice
 If `channel.json` fixes `style`, use it and skip the comparison grid unless the user asks for it.
@@ -101,12 +115,19 @@ Read `references/engine-api.md` and the example scenes in `examples/reaction-tim
 2. Run `node render.mjs --project projects/<slug> --sheet --scale 0.5`. Open every `build/sheets/sheet_XX.png` and check it against the QC checklist in `references/render-qc.md`. Fix any MISSING shots, errors printed by the renderer, and composition problems.
 3. Check motion with `--stills t1,t2,t3` or `--from A --to B --scale 0.5` (writes `build/preview.mp4`).
 
+**Toon cast:** `import * as TO from '/engine/toon.js'`, call `TO.use(g, t)` first in every `draw()`/`overlay()`, build sets and
+characters from the library (`TO.classroom`, `TO.office1995Back/Front`, `TO.keynote`, `TO.kid`, `TO.scholar`, `TO.jensenToon`…)
+and ADD new reusable characters/sets/props to `engine/toon.js` instead of one-off code. Caricatures of real people: look at real
+photos first, keep the head simple and carry the likeness with hair + glasses + outfit, label the name, no invented quotes, no
+logos (style-bible-toon.md). 3D hero props: `engine/toon3d.js` (`chip3d`, `toonSky`, `project`) in a `kind: '3d'` shot, with the
+2D characters drawn in `overlay()`.
+
 **3D cartoon characters (optional):** `kind: '3d'` shots can use rigged 3D cartoon people and a cinematic post chain
 (`rig3d: true`, `T.rig3d`, `T.char3d`, `T.face3d`, `T.pose3d`, `stage({ post })`; see engine-api.md, "3D cartoon characters").
 Decide per video in the story bible and follow style-bible.md, "2D cast or 3D cast". Light 3D rooms brighter (ambient ~2.4,
 key ~3.2, exposure ~1.2) so the dark limbs read, and expect 3D shots to render several times slower than 2D ones.
 
-Non-negotiables from the style bible:
+Non-negotiables from the style bible (stick cast; for toon follow style-bible-toon.md instead of the rim-light/colour items):
 - Rim light on every lit figure.
 - Colours from `mood()`/`S()`.
 - A camera move in every shot.

@@ -15,6 +15,9 @@ Private repository. The studio kit has no licence of its own, so do not make thi
 | `channel.json` | Channel defaults (name, language, 9:16, 30 fps, dusk, captions, pacing); copy next to the studio on a new machine |
 | `kit/tools/join_segments.py` | Joins per-sentence VieNeu clips into one voiceover with fixed pauses |
 | `kit/examples/rig3d-test/` | Two-shot reference project for the 3D add-on |
+| `kit/engine/toon.js`, `toon3d.js` | Toon cast (3rd drawing style): outlined flat 2D cartoon characters, wardrobe, props, sets, comic text, caricatures; toon-shaded 3D props with glow |
+| `references/style-bible-toon.md` | Look and rules for the toon cast |
+| `kit/examples/toon-demo/` | Six-shot reference project for the toon cast |
 
 ## Install
 Copy this folder to `~/.claude/skills/make-2d-video/`, then ask Claude Code to "làm video 2D" / "make a 2D video".
