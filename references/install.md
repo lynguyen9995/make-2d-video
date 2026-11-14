@@ -10,7 +10,7 @@ The studio is a small Node + Python toolkit that ships inside this plugin, in th
 - Use the user's connected project folder if there is one, otherwise the current working directory. Create `make-2d-video-studio/` there.
 - If `make-2d-video-studio/` already exists with `render.mjs` inside, it's already installed. Skip to step 4 (doctor), and never overwrite the user's `projects/` folder.
 - Copy all of `kit/` into it: `cp -r "<kit>/." make-2d-video-studio/` (bash) or `Copy-Item -Recurse "<kit>\*" make-2d-video-studio\` (PowerShell).
-- Run `python tools/verify_kit.py` inside `make-2d-video-studio/`. It must report every file verified (61/61 in v0.6.0). If anything is missing or mismatched, copy those files again.
+- Run `python tools/verify_kit.py` inside `make-2d-video-studio/`. It must report every file verified (62/62 in v0.7.0). If anything is missing or mismatched, copy those files again.
 
 ## 3. Install dependencies
 Tell the user, in one short list, what is being installed and why: ffmpeg (video/audio encoding), Node.js packages (renderer, Three.js, fonts), a headless Chromium (draws the frames), and numpy, scipy and faster-whisper (sound synthesis and timestamps).

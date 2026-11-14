@@ -11,7 +11,7 @@ description: >
   final MP4 in 16:9 or 9:16 at 720p to 4K. Three drawing styles: cinematic stick figures (default), a 3D cartoon
   cast, or the toon cast (outlined flat 2D cartoon with round heads, comic text, visual gags and caricatures).
 metadata:
-  version: "0.6.0"
+  version: "0.7.0"
   author: lynguyen9995
 ---
 
@@ -64,6 +64,18 @@ Ask only what is still unknown (voiceover, script, title). `name` is the channel
 
 `channel.json` → `cast` decides; otherwise ask once in Stage 1 (one line per style). For `toon` the default colour style is `paper`
 (the cinematic grades also work but darken the flat colours). Study `examples/toon-demo/` before writing toon shots.
+
+## News explainer mode (toon cast, the channel's main format)
+When the user asks for a news / finance / tech / billionaire / investment-asset explainer, follow `kit/CLAUDE.md`
+(installed as `make-2d-video-studio/CLAUDE.md`). It replaces stages 1–8 below with a gated workflow:
+0 topic pick (3–5 candidates with source strength, risk and shelf life) ✋ → 1 sourced script + 3 titles + thumbnail concept ✋ →
+2a voice and 2b asset manifest (`story/assets.md`: what to draw, count, made with Flow / user's image AI / code toon /
+three.js + bloom) ✋ → 3 images + character sheets ✋ → 4 timing + scenes → 5 contact sheet of all shots + 30 s demo ✋ →
+6 full render → 7 package (thumbnail, description with sources, chapters, stale-line list) ✋ → 8 upload ✋ → 9 review stats.
+Scene images: no people, no text, no logos. Thumbnails: may contain people (stylised, never photoreal fakes of real people)
+and ≤ 4 words of text. Never upload through the YouTube Data API from an unaudited project (uploads get locked private);
+upload through the YouTube Studio website, saved Private/Scheduled, and publish only on the user's explicit go.
+In a local Claude Code session run every command yourself; write `.bat` jobs only when you have no Windows shell.
 
 ## Stage 0: Video language (always first)
 If `channel.json` gives `lang`, confirm it in the one-line summary above instead of asking. Otherwise, before asking anything else, creating files, installing or editing, ask exactly one question in the user's language, for example: **"Video này dùng ngôn ngữ nào? (ví dụ: Tiếng Việt, English, 日本語…)"**. Use AskUserQuestion when available. Wait for the answer, then map it to an ISO 639-1 code (`vi`, `en`, `ja`, `ko`, `es`, `pt`, `de`, `fr`, `hi`, …). If the user already named the video language earlier in this conversation, confirm it in one line instead of asking again.
