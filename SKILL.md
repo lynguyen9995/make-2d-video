@@ -11,7 +11,7 @@ description: >
   final MP4 in 16:9 or 9:16 at 720p to 4K. Three drawing styles: cinematic stick figures (default), a 3D cartoon
   cast, or the toon cast (outlined flat 2D cartoon with round heads, comic text, visual gags and caricatures).
 metadata:
-  version: "0.4.0"
+  version: "0.5.0"
   author: Thanh Hai Learn AI
 ---
 
@@ -119,6 +119,9 @@ Read `references/engine-api.md` and the example scenes in `examples/reaction-tim
 characters from the library (`TO.classroom`, `TO.office1995Back/Front`, `TO.keynote`, `TO.kid`, `TO.scholar`, `TO.jensenToon`…)
 and ADD new reusable characters/sets/props to the toon library instead of one-off code. Characters, 31 front poses, side walk/run, 19
 expressions: `engine/toon-rig.js` (`TR.character(id, x, y, s, { t, view, pose, expr, talk })`); props and sets: `engine/toon-props.js`.
+v0.5 motion: `TR.act()` (overshoot + follow-through), lip sync `TR.voice(t)` + `TR.speak()` from `timeline/envelope.json` (`python -I tools/envelope.py --project …`),
+3/4 view (`view: '3q'`), camera `TO.camFx`, `TO.lineChart`, `TO.pageTurn`, background images `config.images` + `TO.bgImage`. Rule: characters and
+everything drawable are code; external AI images (e.g. Google Flow) only for hard backgrounds such as real landmarks (style-bible-toon.md).
 Before drawing anything new, render and look at `examples/toon-catalog` (everything that exists); after adding something new, add it to
 the catalog (style-bible-toon.md → "Making NEW things"). The three styles are independent: toon shots never import rig2d/rig3d. Caricatures of real people: look at real
 photos first, keep the head simple and carry the likeness with hair + glasses + outfit, label the name, no invented quotes, no

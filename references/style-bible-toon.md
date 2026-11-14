@@ -82,6 +82,32 @@ New videos will need things that don't exist yet. Make them in code, never with 
 5. Add the new item to the matching shot in `examples/toon-catalog/scenes/shots/catalog.js`, re-render the sheet and look at it.
 6. Keep one-off drawing inside shot files only for things that will never come back.
 
+## v0.5 additions (motion, lip sync, camera, effects)
+- **Body proportions:** default build B (as is). Per character or per call: `build: { head, legs, arms, torso, width }`.
+- **Views:** `view: 'front' | '3q' | 'side'`. Use **3q** for characters talking to each other or looking at a chart (face stays readable,
+  own mouth set); use **side** only for walking/running. `facing: -1` mirrors.
+- **Lively motion:** `TR.act(t, keys, { dur, overshoot, lag })` instead of `posesAt` (overshoot-and-settle, forearm follow-through).
+- **Lip sync:** run `python -I tools/envelope.py --project projects/<slug>` after the voiceover exists (writes `timeline/envelope.json`).
+  In a shot: `const v = TR.voice(t); const P = TR.speak(TR.act(t, KEYS), t, v); TR.character(id, x, y, s, { t, pose: P, voice: v })`
+  — mouth opens with the narration loudness (round open mouth only while talking), brows lift and the head nods on stressed syllables.
+  Pass the shot's GLOBAL time to `voice()` if the shot does not start at 0 (`info.start + t`).
+- **Expressions:** 21 now, incl. `cheer` (eyes smiling, open mouth) and `chat`. A cast spec may set a default `expr`.
+- **Caricature options (spec):** `nose: 'bulb'|'broad'|'wideTip'|'wide'`, `browShape: 'taper'`, `browDroop`, `browCol`, `browEdge`,
+  `smile: 'closed'|'teeth'|'big'`, hair `silver73R/L`, `silver72R/L`, `silver71R/L`, `silverPomp`, `silverBack`, `bobBlonde`.
+  Tested: for Jensen the plain `silver` + no nose (the original look) reads best; keep extra realism out unless asked.
+- **Cast:** + `kress` (Colette Kress caricature: blonde bob, navy suit).
+- **Camera & effects (toon.js):** `const end = TO.camFx(t, { drift: [1, 1.06, dur], punch: [[t0, 0.1, hold]], shake: [[t0, dur, px]], cx, cy }); …; end();`
+  `TO.lineChart(x, y, w, h, [{label, v}], progress, { title, color, max, unit, popColor })` draws itself; `TO.pageTurn(p)` paper
+  transition (0→1 covers at the end of a shot, 1→2 reveals at the start of the next); `TO.popIn(p)` scale helper.
+- **Backgrounds from images:** `config.json → "images": { "capitol": "assets/capitol.jpg" }`, then `TO.bgImage('capitol', { t, zoom: [1, 1.06, dur], dim: 0.3 })`.
+- **Captions:** groups never cross a sentence end or a pause, max 4 words (`captionStyle.max`).
+- **Props:** `TP.chair`, `TP.nameplate`, `TP.letter`, `TP.tradingFloor(t, { symbols, ticker })`.
+
+## Proven structure for a 30–45 s news explainer (Jensen demo)
+Hook first (the most dramatic fact + a number, e.g. "Four days."), the first frame = the thumbnail scene, "Let's rewind", the
+story in 4–5 beats with one visual gag or number per beat, change the picture every 2–3 s, end on a memorable line. Facts only
+from sources; unconfirmed claims say "reportedly"; no invented quotes; no real logos; show the source on screen for allegations.
+
 ## API cheat sheet (`import * as TO from '/engine/toon.js'`)
 - **Primitives:** `use part fs rr ell line curve glow shade head ikArm hand eye sweat rng`, constants `INK OUT F`.
 - **Text:** `comic handTitle handReveal chalk`.
@@ -100,3 +126,18 @@ New videos will need things that don't exist yet. Make them in code, never with 
 Every video should add 3–5 reusable assets (a character, a set, a prop) to `toon.js` instead of one-off code in the shot files.
 That library is what makes a long video fast to produce. New characters reuse the body and `head()`; only hair, glasses and
 outfit change.
+
+## Code first, Flow (AI images) only as a fallback
+Default workflow for every toon video (owner's rule):
+1. **Characters are always the toon cast drawn in code** (`toon-rig.js`): same look in every video, lip sync, poses, expressions.
+   Do not replace them with AI-generated characters.
+2. **Scenes, props, charts, text and effects: draw them in code** whenever the library has them or they can be added in a
+   reasonable amount of code (rooms, stages, chips, charts, newspapers, chairs, calendars, stamps, maps...).
+3. **Use Google Flow (or another image tool) only for what code cannot draw well**: detailed real places and landmarks
+   (e.g. the U.S. Capitol), complex wide backgrounds. Prompt it in the channel look ("flat vector cartoon background, thick black
+   outlines on every shape, flat colors with one simple shadow side, no people, no text, no logos, 16:9") and leave empty space
+   where the character will stand.
+4. Load such images with `config.json → "images": { "key": "assets/file.jpg" }` and draw them with `TO.bgImage(key, { t, zoom, dim })`.
+   Characters always go on top in code.
+5. The user can generate the Flow images themselves and drop them into the project's `assets/` folder; driving the browser
+   for this is slow and expensive, so only do it when asked.

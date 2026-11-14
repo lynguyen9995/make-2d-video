@@ -9,7 +9,7 @@
 // All coordinates are logical units (1920x1080 landscape). Fonts: TO.F.hand (Patrick Hand) for handwriting,
 // TO.F.comic (Nunito 900 italic) for comic pop text — Bangers is NOT used because it mangles Ơ/Ư.
 // Read references/style-bible-toon.md before designing toon shots.
-import { clamp, lerp, prog, ease } from './core.js';
+import { clamp, lerp, prog, ease, E } from './core.js';
 
 let g = null, BOIL = 0;
 export const INK = '#141218', OUT = 6;
@@ -294,3 +294,59 @@ export function kidHoldUp(hL, hR, t, glowCol = 'rgba(110,255,90,.55)') {
   sweat(hx + 96, hy - 50, t * 1.7); sweat(hx - 104, hy - 50, t * 1.7, 1);
   for (const h of [a1, a2]) { ell(h[0], h[1], 22, 18); fs(SK, 6); }
 }
+
+// ---------------- camera & effects (v0.5) ----------------
+// camFx(t, o): wraps the scene in a camera move. Call before drawing, call the returned end() after.
+//   o = { cx, cy (zoom centre, default 960,540), drift: [z0, z1, dur] slow push-in,
+//         punch: [[t0, amount, hold]] quick zoom-in that overshoots then settles (amount 0.15 = +15%), held for `hold` s then eases back,
+//         shake: [[t0, dur, amp]] decaying screen shake (amp in px) }
+export function camFx(t, o = {}) { const cx = o.cx ?? 960, cy = o.cy ?? 540; let z = 1, dx = 0, dy = 0, r = 0;
+  if (o.drift) { const [z0, z1, d] = o.drift; z *= lerp(z0, z1, ease.inOut(clamp(t / d))); }
+  for (const [t0, amt, hold = 1.2] of o.punch || []) { if (t < t0) continue; const a = ease.outBack(clamp((t - t0) / 0.22)), b = ease.inOut(clamp((t - t0 - hold) / 0.45)); z *= 1 + amt * a * (1 - b); }
+  for (const [t0, d, amp] of o.shake || []) { const k = (t - t0) / d; if (k < 0 || k > 1) continue; const f = (1 - k) ** 2 * amp; dx += Math.sin(t * 83) * f + Math.sin(t * 47) * f * 0.5; dy += Math.cos(t * 71) * f; r += Math.sin(t * 59) * f * 0.0008; }
+  g.save(); g.translate(cx + dx, cy + dy); g.rotate(r); g.scale(z, z); g.translate(-cx, -cy);
+  return () => g.restore(); }
+
+// lineChart(x, y, w, h, data, p, o): outlined toon chart that draws itself (p 0..1). data = [{ label, v }].
+//   o = { title, color, max, unit, highlightLast: true, card: true } — dots pop as the line reaches them, last value pops as comic text.
+export function lineChart(x, y, w, h, data, p = 1, o = {}) { const col = o.color || '#2e9d4a', max = o.max ?? Math.max(...data.map(d => d.v)) * 1.15, n = data.length;
+  g.save(); g.translate(x, y);
+  if (o.card !== false) { rr(-40, -h - 110, w + 80, h + 190, 22); fs('#fbf7ec'); }
+  if (o.title) { g.font = `900 ${Math.round(h * 0.11)}px "${F.comic}"`; g.fillStyle = INK; g.textBaseline = 'alphabetic'; g.textAlign = 'left'; g.fillText(o.title, 0, -h - 40); }
+  line([[0, 0], [w, 0]], 5); for (let i = 1; i <= 3; i++) line([[0, -h * i / 3.3], [w, -h * i / 3.3]], 2, 'rgba(20,18,24,.15)', [10, 10]);
+  const pts = data.map((d, i) => [w * (n === 1 ? 0.5 : i / (n - 1)), -h * d.v / max]);
+  g.font = `700 ${Math.round(h * 0.075)}px "${F.comic}"`; g.textAlign = 'center'; g.fillStyle = 'rgba(20,18,24,.7)'; data.forEach((d, i) => g.fillText(d.label, pts[i][0], h * 0.11));
+  // progressive line by length
+  const seg = []; let L = 0; for (let i = 1; i < n; i++) { const l = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push(l); L += l; }
+  let left = clamp(p) * L + 1e-6; const shown = [pts[0]]; let reached = 0;
+  for (let i = 1; i < n && left > 0; i++) { const k = Math.min(1, left / seg[i - 1]); shown.push([lerp(pts[i - 1][0], pts[i][0], k), lerp(pts[i - 1][1], pts[i][1], k)]); if (k >= 0.999) reached = i; left -= seg[i - 1]; }
+  if (p > 0 && shown.length > 1) { g.save(); g.beginPath(); g.moveTo(shown[0][0], 0); shown.forEach(q => g.lineTo(...q)); g.lineTo(shown[shown.length - 1][0], 0); g.closePath(); g.fillStyle = col + '33'; g.fill(); g.restore(); line(shown, 14); line(shown, 8, col); }
+  for (let i = 0; i <= reached && p > 0; i++) { const last = i === n - 1 && o.highlightLast !== false, sc = 1; ell(pts[i][0], pts[i][1], last ? 16 : 11, last ? 16 : 11); fs(last ? '#ffd23f' : '#fff', 5); }
+  if (reached === n - 1 && o.highlightLast !== false) { const d = data[n - 1]; g.restore(); comic(`${d.v}${o.unit || ''}`, x + pts[n - 1][0], y + pts[n - 1][1] - 70, h * 0.2, o.popP ?? clamp((p - 0.9) / 0.1), o.popColor || '#ffd23f'); return; }
+  g.restore(); }
+
+// pageTurn(p, o): paper page-turn transition. p 0→1 a sheet sweeps in from the right and covers the frame; p 1→2 it peels off to the left.
+//   Call it LAST in the outgoing shot (p = 0..1 over its final ~0.5 s) and FIRST-over-content in the incoming shot (p = 1..2).
+export function pageTurn(p, o = {}) { if (p <= 0 || p >= 2) return; const W = o.W || 1920, H = o.H || 1080, col = o.color || '#f3ead6';
+  const k = p <= 1 ? ease.inOut(p) : ease.inOut(p - 1), edge = p <= 1 ? lerp(W + 260, -260, k) : lerp(W + 260, -260, k), curl = 140 * Math.sin(Math.PI * k);
+  g.save(); g.beginPath();
+  if (p <= 1) { g.moveTo(W + 10, -10); g.lineTo(edge + curl * 0.4, -10); g.quadraticCurveTo(edge - curl, H / 2, edge + curl * 0.4, H + 10); g.lineTo(W + 10, H + 10); }
+  else { g.moveTo(-10, -10); g.lineTo(edge + curl * 0.4, -10); g.quadraticCurveTo(edge - curl, H / 2, edge + curl * 0.4, H + 10); g.lineTo(-10, H + 10); }
+  g.closePath(); g.save(); g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 40; g.shadowOffsetX = p <= 1 ? -20 : 20; g.fillStyle = col; g.fill(); g.restore();
+  g.save(); g.clip(); const r = rng(9); for (let i = 0; i < 900; i++) { g.fillStyle = r() > 0.5 ? 'rgba(255,255,255,.18)' : 'rgba(120,90,50,.07)'; g.fillRect(r() * W, r() * H, 3, 2); } g.restore();
+  g.lineWidth = OUT; g.strokeStyle = INK; g.stroke();
+  // curl: a soft shaded band along the leading edge
+  g.save(); g.beginPath(); g.moveTo(edge + curl * 0.4, -10); g.quadraticCurveTo(edge - curl, H / 2, edge + curl * 0.4, H + 10); g.lineTo(edge + curl * 0.4 + (p <= 1 ? 70 : -70), H + 10); g.quadraticCurveTo(edge - curl + (p <= 1 ? 70 : -70), H / 2, edge + curl * 0.4 + (p <= 1 ? 70 : -70), -10); g.closePath();
+  const gr = g.createLinearGradient(edge - curl * 0.3, 0, edge - curl * 0.3 + (p <= 1 ? 90 : -90), 0); gr.addColorStop(0, 'rgba(255,255,255,.55)'); gr.addColorStop(1, 'rgba(120,90,50,0)'); g.fillStyle = gr; g.fill(); g.restore();
+  g.restore(); }
+
+// popIn(p): returns a scale 0..~1.1..1 for elements that should pop in (use with g.scale around their centre).
+export const popIn = p => p <= 0 ? 0 : ease.outBack(clamp(p));
+
+// bgImage(key, o): draw a preloaded image (config.images) as a full-frame background, cover-fit, with a slow camera.
+//   o = { zoom: [z0, z1, dur] (default slight push-in), pan: [dx, dy] px over dur, cx, cy, t, dim: 0..1 darken, tint: 'rgba(...)' }
+export function bgImage(key, o = {}) { const im = E.img && E.img[key]; if (!im) { g.fillStyle = '#20232c'; g.fillRect(0, 0, 1920, 1080); return; }
+  const t = o.t || 0, [z0, z1, d] = o.zoom || [1.0, 1.06, 8], k = ease.inOut(clamp(t / d)), z = lerp(z0, z1, k), [px, py] = o.pan || [0, 0];
+  const sc = Math.max(1920 / im.width, 1080 / im.height) * z, w = im.width * sc, h = im.height * sc, cx = o.cx ?? 0.5, cy = o.cy ?? 0.5;
+  g.save(); g.imageSmoothingQuality = 'high'; g.drawImage(im, 960 - w * cx + px * k, 540 - h * cy + py * k, w, h);
+  if (o.dim) { g.fillStyle = `rgba(0,0,0,${o.dim})`; g.fillRect(0, 0, 1920, 1080); } if (o.tint) { g.fillStyle = o.tint; g.fillRect(0, 0, 1920, 1080); } g.restore(); }
