@@ -41,14 +41,17 @@ async function boot() {
   const cfg = await (await fetch(`${PROJ}/config.json`)).json();
   const story = await (await fetch(`${PROJ}/story/shots.json`)).json();
   let words = []; try { const r = await fetch(`${PROJ}/timeline/words.json`); if (r.ok) words = await r.json(); } catch {}
+  let env = null; try { const r = await fetch(`${PROJ}/timeline/envelope.json`); if (r.ok) env = await r.json(); } catch {}
   const vertical = (cfg.aspect || '16:9') === '9:16';
   const short = RES[cfg.resolution || '1080p'] || 1080, long = Math.round((short * 16) / 9 / 2) * 2;
   const scale = +(q.get('scale') || 1);
   const outW = Math.round(((vertical ? short : long) * scale) / 2) * 2, outH = Math.round(((vertical ? long : short) * scale) / 2) * 2;
-  Object.assign(E, { vertical, W: vertical ? 1080 : 1920, H: vertical ? 1920 : 1080, fps: cfg.fps || 24, cfg, words: words.words || words, shots: story.shots, outW, outH });
+  Object.assign(E, { vertical, W: vertical ? 1080 : 1920, H: vertical ? 1920 : 1080, fps: cfg.fps || 24, cfg, words: words.words || words, env, shots: story.shots, outW, outH });
   E.PX = outW / E.W;
   setStyle(q.get('style') || cfg.style || 'dusk');
   await loadFonts(cfg.lang);
+  // config.images = { key: 'assets/file.jpg' } -> E.img[key] (backgrounds/props made outside the engine, e.g. Google Flow)
+  E.img = {}; for (const [k, p] of Object.entries(cfg.images || {})) { try { const im = new Image(); im.src = `${PROJ}/${p}`; await im.decode(); E.img[k] = im; } catch (e) { errors.push(`image ${k}: ${e.message}`); console.log('IMAGE ERROR', k, e.message); } }
   main = document.getElementById('main'); main.width = outW; main.height = outH; mg = main.getContext('2d', { willReadFrequently: true });
   buildLUT();
   bufA = mk(outW, outH); bufB = mk(outW, outH);

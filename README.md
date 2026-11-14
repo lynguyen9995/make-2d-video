@@ -21,6 +21,13 @@ Private repository. The studio kit has no licence of its own, so do not make thi
 | `kit/engine/toon-rig.js`, `toon-props.js` | Toon cast library: characters (front + side), 31 poses, walk/run, 19 expressions, 20 props, 4 more sets |
 | `kit/examples/toon-catalog/` | Catalog of everything the toon cast has (render with `--sheet`) + a motion test |
 
+## Changelog
+- **0.5.0** — toon: lively motion (`act`), audio-driven lip sync (`tools/envelope.py`, `voice`, `speak`), 3/4 view, 2 new expressions,
+  caricature options (nose, brows, hair variants), camera punch/shake/drift, self-drawing line chart, page-turn transition, image backgrounds
+  (`config.images` + `bgImage`, e.g. Google Flow backgrounds), sentence-aware captions, Kress caricature, chair/nameplate/letter props.
+  Rule: characters in code, AI images only for hard backgrounds.
+- **0.4.0** — toon library (own rig, poses, expressions, cast, props, sets, catalog).
+
 ## Install
 Copy this folder to `~/.claude/skills/make-2d-video/`, then ask Claude Code to "làm video 2D" / "make a 2D video".
 

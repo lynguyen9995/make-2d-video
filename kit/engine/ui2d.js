@@ -83,9 +83,11 @@ export function endScreen(g, t, o = {}) {
 export function captions(g, globalT, o = {}) {
   const words = E.words; if (!words.length) return; const { y = V(E.H - 150, E.H * 0.79), size = V(58, 74), max = 4, color = '#ffffff', hi = S().ui.gold } = o;
   let i = -1; for (let k = words.length - 1; k >= 0; k--) if (globalT >= words[k].start - 0.05) { if (globalT <= words[k].end + 0.35) i = k; break; } if (i < 0) return;
-  const st = Math.floor(i / max) * max, group = words.slice(st, st + max); const strs = group.map(w => w.word.trim().toUpperCase());
+  // groups never cross a sentence end or a pause (> 0.3 s), and hold at most `max` words
+  if (!E.__capGroups || E.__capGroups.max !== max || E.__capGroups.n !== words.length) { const gs = []; let cur = []; words.forEach((w, k) => { if (cur.length && (cur.length >= max || w.start - words[k - 1].end > 0.3 || /[.!?:]$/.test(words[k - 1].word.trim()))) { gs.push(cur); cur = []; } cur.push(k); }); if (cur.length) gs.push(cur); const of = []; gs.forEach(gr => gr.forEach(k => { of[k] = gr[0]; })); E.__capGroups = { max, n: words.length, of, len: gs.reduce((m, gr) => (m[gr[0]] = gr.length, m), {}) }; }
+  const st = E.__capGroups.of[i], group = words.slice(st, st + E.__capGroups.len[st]); const strs = group.map(w => w.word.trim().toUpperCase());
   const w0 = strs.map(s => measure(g, s, size)).reduce((a, b) => a + b, 0) + size * 0.3 * (strs.length - 1);
   const sz = size * Math.min(1, (E.W * 0.88) / w0);   // shrink long phrases to fit the frame
-  const gap = sz * 0.3, widths = strs.map(s => measure(g, s, sz)), total = widths.reduce((a, b) => a + b, 0) + gap * (strs.length - 1);
+  const gap = sz * 0.42, widths = strs.map(s => measure(g, s, sz)), total = widths.reduce((a, b) => a + b, 0) + gap * (strs.length - 1);
   let x = E.W / 2 - total / 2; strs.forEach((s, k) => { const cur = st + k === i; const pop = cur ? 1 + 0.08 * ease.out(prog(globalT, group[k].start, group[k].start + 0.12)) : 1; g.save(); g.translate(x + widths[k] / 2, y); g.scale(pop, pop); text(g, s, 0, 0, { size: sz, color: cur ? hi : color, stroke: sz * 0.16, strokeColor: 'rgba(0,0,0,.85)' }); g.restore(); x += widths[k] + gap; });
 }
