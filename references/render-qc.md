@@ -31,7 +31,7 @@ python audio/mix.py --project projects/my-video        # builds music + SFX, mix
 - [ ] Audio: voice clear, music ducked, no SFX pile-ups, final loudness about −14 LUFS.
 
 ## Troubleshooting
-- **Fonts look like serif defaults** → the `@fontsource` packages are missing. Run `npm install` in thanhhai-2d-studio.
+- **Fonts look like serif defaults** → the `@fontsource` packages are missing. Run `npm install` in make-2d-video-studio.
 - **`Player failed to boot`** → read the message. Usually it's a JSON syntax error in shots.json/config.json or an import path in a scene. Scene import errors are listed at the end of a render.
 - **WebGL or 3D shot black** → add `--gl swiftshader`, and check the console for Three.js errors (a misspelt builder or a missing `return {stage}` in init).
 - **Out of memory or crashes at 4K** → use `--workers 1` or `2`, and avoid huge blur amounts on 4K (blur cost scales with resolution).

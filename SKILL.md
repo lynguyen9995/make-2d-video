@@ -11,7 +11,7 @@ description: >
   final MP4 in 16:9 or 9:16 at 720p to 4K. Three drawing styles: cinematic stick figures (default), a 3D cartoon
   cast, or the toon cast (outlined flat 2D cartoon with round heads, comic text, visual gags and caricatures).
 metadata:
-  version: "0.5.0"
+  version: "0.6.0"
   author: Thanh Hai Learn AI
 ---
 
@@ -20,7 +20,7 @@ metadata:
 Turn a voiceover (plus an optional script) into a finished MP4 where every frame is drawn by code (HTML canvas + Three.js), captured frame by frame in headless Chromium and encoded with ffmpeg. No image or video generation models are used, so characters stay consistent and text stays crisp. Invent the visuals fresh for every script; only the style is fixed.
 
 **Bundled resources (this skill's base directory):**
-- `kit/`: the tested studio (renderer, engine, tools, audio, the `examples/reaction-time` reference project). Install it into the workspace as `thanhhai-2d-studio/` (see `references/install.md`).
+- `kit/`: the tested studio (renderer, engine, tools, audio, the `examples/reaction-time` reference project). Install it into the workspace as `make-2d-video-studio/` (see `references/install.md`).
 - `references/install.md`: install, dependency table, doctor, self-test.
 - `references/style-bible.md`: **the look** (characters, sets, light, camera, editing, graphics, 9:16 rules, don'ts). Read it fully before designing any shot.
 - `references/style-bible-toon.md`: the look for the **toon cast** (`cast: "toon"`). When the cast is toon, follow it instead of the parts of style-bible.md that conflict (rim light, no outlines, black silhouettes).
@@ -38,10 +38,17 @@ Stage commands from this plugin re-run one stage: `/new-video` (stages 1–4), `
 3. **Show what is said, literally and specifically.** Abstract lines become visual metaphors, diagrams or close-up reactions.
 4. **Draft, look, fix, then render.** Open contact sheets and stills yourself (read the PNGs) before any full render. Rendering is slow; looking is fast.
 5. **Three user checkpoints:** setup choices, style choice from rendered samples, and the preview before the final render. If the user is away, take the defaults, state what was assumed, and continue.
-6. **Files are the truth.** Each video lives in `thanhhai-2d-studio/projects/<slug>/`, and `story/shots.json` owns all timing.
+6. **Files are the truth.** Each video lives in `make-2d-video-studio/projects/<slug>/`, and `story/shots.json` owns all timing.
+   One video = one self-contained folder: `config.json`, `input/`, `assets/` (+ `assets/_raw/` for unpicked AI images), `scenes/`, `story/`
+   (incl. `plan.md` handoff notes), `timeline/`, `jobs/` (+ `jobs/logs/`), `build/` (temporary, safe to delete), `out/` (deliverables only).
+   Never put per-video files at the studio root or in a separate `_jobs/` folder.
+7. **Only people in the story appear on screen (news/explainer videos).** No channel mascots or narrator/host characters
+   (e.g. `nhoc`, `ongdo`) unless the user asks for them. Every named person in the news gets their own toon (signature hair, glasses,
+   outfit, per the caricature rules in style-bible-toon.md) plus a name label, not a generic figure or a silhouette. Private or
+   unnamed people (unconfirmed suspects, family members) stay anonymous: a generic unnamed toon or a silhouette with a role label.
 
 ## Channel defaults (`channel.json`)
-Before Stage 0, look for `channel.json` next to `thanhhai-2d-studio/` (the workspace folder that holds the studio), then in the
+Before Stage 0, look for `channel.json` next to `make-2d-video-studio/` (the workspace folder that holds the studio), then in the
 current folder, then in this skill's base directory (the copy that travels with the skill; on a new machine copy it next to
 the studio once it is installed). It can hold `name`, `lang`, `aspect`, `resolution`, `fps`, `style`, `cast` (`stick` | `3d` | `toon`), `captions`, `shotsPerMin` and `music`.
 Every key present is the default for this video: skip the questions it answers (language, aspect, resolution, fps, captions,
@@ -85,10 +92,17 @@ After the language is known, ask once (AskUserQuestion when available) for:
 Don't ask about the colour style yet. Defaults (when `channel.json` doesn't say): 16:9, 1080p, 24 fps, generated music + SFX, cast `stick`, style `dusk` (`paper` for toon).
 
 ## Stage 2: Install or check the studio
-Follow `references/install.md`: copy `kit/` to `thanhhai-2d-studio/` in the workspace (skip if already present), install dependencies, run `python tools/verify_kit.py` and `python tools/doctor.py`, then run the example self-test. Report what was installed in one short list. On Windows, if doctor finds ffmpeg only in the winget folder it writes `thanhhai-2d-studio/env.sh` and `env.ps1`; prefix render and mix commands with `source env.sh &&` (a shell started before the install doesn't see the new PATH).
+Follow `references/install.md`: copy `kit/` to `make-2d-video-studio/` in the workspace (skip if already present), install dependencies, run `python tools/verify_kit.py` and `python tools/doctor.py`, then run the example self-test. Report what was installed in one short list. On Windows, if doctor finds ffmpeg only in the winget folder it writes `make-2d-video-studio/env.sh` and `env.ps1`; prefix render and mix commands with `source env.sh &&` (a shell started before the install doesn't see the new PATH).
 
 ## Stage 3: Project + timeline
-Run inside `thanhhai-2d-studio/`. Use `python3` where `python` isn't Python 3.
+Run inside `make-2d-video-studio/`. Use `python3` where `python` isn't Python 3.
+
+**Windows without a usable terminal (computer use can only click in File Explorer):** put each long step in a job the user
+double-clicks. Copy `tools/jobs/templates/full.ps1` + `2-full.bat` into `projects/<slug>/jobs/`; every job `.ps1` starts with
+`$JobDir = $PSScriptRoot` and dot-sources `..\..\..\tools\jobs\common.ps1` (gives `$P`, `Run`, `Py`, `Say`, `Fail`, `Done`, and writes
+`jobs/logs/<name>.log` + `<name>.status` = RUNNING / OK / FAILED for Claude to read). Shared helpers: `tools/jobs/set_duration.py`
+(config.json duration from the voiceover), `tools/jobs/make_srt.py` (`out/<title>.en.srt` from `timeline/sentences.json`).
+Studio install/repair on Windows: `tools/jobs/setup-studio.bat`.
 ```bash
 python tools/new_project.py --name <slug> --voice "<voiceover path>" [--script "<script path>"] --aspect 16:9 --resolution 1080p --fps 24 --style dusk --title "<title>" --lang <code> [--captions]
 ```
@@ -121,7 +135,8 @@ and ADD new reusable characters/sets/props to the toon library instead of one-of
 expressions: `engine/toon-rig.js` (`TR.character(id, x, y, s, { t, view, pose, expr, talk })`); props and sets: `engine/toon-props.js`.
 v0.5 motion: `TR.act()` (overshoot + follow-through), lip sync `TR.voice(t)` + `TR.speak()` from `timeline/envelope.json` (`python -I tools/envelope.py --project …`),
 3/4 view (`view: '3q'`), camera `TO.camFx`, `TO.lineChart`, `TO.pageTurn`, background images `config.images` + `TO.bgImage`. Rule: characters and
-everything drawable are code; external AI images (e.g. Google Flow) only for hard backgrounds such as real landmarks (style-bible-toon.md).
+text, charts and effects are code; external AI images (e.g. Google Flow: flat vector cartoon, thick outlines, no people/text/logos) for backgrounds
+and objects (objects on a flat green background, keyed out with ffmpeg chromakey to PNG) (style-bible-toon.md).
 Before drawing anything new, render and look at `examples/toon-catalog` (everything that exists); after adding something new, add it to
 the catalog (style-bible-toon.md → "Making NEW things"). The three styles are independent: toon shots never import rig2d/rig3d. Caricatures of real people: look at real
 photos first, keep the head simple and carry the likeness with hair + glasses + outfit, label the name, no invented quotes, no

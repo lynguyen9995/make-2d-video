@@ -10,7 +10,8 @@ Private repository. The studio kit has no licence of its own, so do not make thi
 |---|---|
 | `SKILL.md` | The skill: the full pipeline from voiceover to final MP4 |
 | `references/` | Style bible, story breakdown, engine API, sound design, render QC, install |
-| `kit/` | The studio that gets installed into a workspace as `thanhhai-2d-studio/` |
+| `kit/` | The studio that gets installed into a workspace as `make-2d-video-studio/` (copy of `kit/` + `node_modules` + your `projects/`) |
+| `kit/tools/jobs/` | Windows double-click jobs: shared `common.ps1`, `set_duration.py`, `make_srt.py`, studio setup, `templates/` for a full render |
 | `kit/engine/rig3d.js`, `rig3d-cast.js`, `post3d.js` | Add-on: 3D cartoon characters and cinematic post for `kind: '3d'` shots |
 | `channel.json` | Channel defaults (name, language, 9:16, 30 fps, dusk, captions, pacing); copy next to the studio on a new machine |
 | `kit/tools/join_segments.py` | Joins per-sentence VieNeu clips into one voiceover with fixed pauses |
@@ -22,6 +23,9 @@ Private repository. The studio kit has no licence of its own, so do not make thi
 | `kit/examples/toon-catalog/` | Catalog of everything the toon cast has (render with `--sheet`) + a motion test |
 
 ## Changelog
+- **0.6.0** — studio folder renamed `thanhhai-2d-studio/` → `make-2d-video-studio/` (rename old installs); each video is one
+  self-contained folder with its own `jobs/`; shared Windows job helpers in `tools/jobs/` (logs + status files, SRT, duration, setup);
+  rule: news videos show only people in the story, each as their own labelled toon, no channel mascots.
 - **0.5.0** — toon: lively motion (`act`), audio-driven lip sync (`tools/envelope.py`, `voice`, `speak`), 3/4 view, 2 new expressions,
   caricature options (nose, brows, hair variants), camera punch/shake/drift, self-drawing line chart, page-turn transition, image backgrounds
   (`config.images` + `bgImage`, e.g. Google Flow backgrounds), sentence-aware captions, Kress caricature, chair/nameplate/letter props.

@@ -2,16 +2,19 @@
 
 ## Folder layout
 ```
-thanhhai-2d-studio/
+make-2d-video-studio/
   render.mjs  player.html  package.json
   engine/   core.js styles.js rig2d.js fx2d.js ui2d.js three-kit.js player.js
-  tools/    doctor.py verify_kit.py new_project.py transcribe.py parse_script.py beats.py common.py
+  tools/    doctor.py verify_kit.py new_project.py transcribe.py parse_script.py beats.py common.py envelope.py join_segments.py
+    jobs/   common.ps1 set_duration.py make_srt.py setup.ps1 setup-studio.bat  templates/ (full.ps1, 2-full.bat)
   audio/    dsp.py sfx.py music.py mix.py
   examples/reaction-time/   (reference project: scenes + story)
   projects/<slug>/
      config.json   input/ (voiceover, script, music)   timeline/ (words, sentences, beats)
      story/shots.json  story/bible.md   scenes/cast.js  scenes/sets/*.js  scenes/shots/*.js
-     build/ (sheets, stills, styles, parts, music.wav, mix.wav, video_silent.mp4)   out/<title>.mp4
+     assets/ (picked images, assets/_raw/ = unpicked)   story/plan.md (handoff notes)   jobs/ (*.bat, *.ps1, logs/)
+     build/ (temporary: sheets, stills, styles, parts, music.wav, mix.wav, video_silent.mp4)
+     out/ (deliverables only: <title>.mp4, <title>.en.srt, thumbnail, youtube.txt)
 ```
 Every `.js` under `scenes/` is loaded automatically (files starting with `_` are skipped). Import the engine with absolute paths (`'/engine/core.js'`) and project files relatively (`'../cast.js'`).
 

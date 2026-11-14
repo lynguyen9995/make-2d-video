@@ -7,10 +7,12 @@ The studio is a small Node + Python toolkit that ships inside this plugin, in th
 - If the path is unclear, search for it: `find / -path "*make-2d-video/kit/render.mjs" 2>/dev/null | head -1` (Linux/macOS/Cowork VM), or `Get-ChildItem -Recurse -Filter render.mjs -Path $HOME\.claude | Select-Object -First 1` (PowerShell).
 
 ## 2. Choose the workspace and copy
-- Use the user's connected project folder if there is one, otherwise the current working directory. Create `thanhhai-2d-studio/` there.
-- If `thanhhai-2d-studio/` already exists with `render.mjs` inside, it's already installed. Skip to step 4 (doctor), and never overwrite the user's `projects/` folder.
-- Copy all of `kit/` into it: `cp -r "<kit>/." thanhhai-2d-studio/` (bash) or `Copy-Item -Recurse "<kit>\*" thanhhai-2d-studio\` (PowerShell).
-- Run `python tools/verify_kit.py` inside `thanhhai-2d-studio/`. It must report 53/53. If anything is missing or mismatched, copy those files again.
+- Use the user's connected project folder if there is one, otherwise the current working directory. Create `make-2d-video-studio/` there.
+- Older installs used the folder name `thanhhai-2d-studio/`. If that exists and `make-2d-video-studio/` doesn't, ask the user to rename it
+  (it is the same studio; nothing inside depends on the folder name), then continue with it.
+- If `make-2d-video-studio/` already exists with `render.mjs` inside, it's already installed. Skip to step 4 (doctor), and never overwrite the user's `projects/` folder.
+- Copy all of `kit/` into it: `cp -r "<kit>/." make-2d-video-studio/` (bash) or `Copy-Item -Recurse "<kit>\*" make-2d-video-studio\` (PowerShell).
+- Run `python tools/verify_kit.py` inside `make-2d-video-studio/`. It must report every file verified (61/61 in v0.6.0). If anything is missing or mismatched, copy those files again.
 
 ## 3. Install dependencies
 Tell the user, in one short list, what is being installed and why: ffmpeg (video/audio encoding), Node.js packages (renderer, Three.js, fonts), a headless Chromium (draws the frames), and numpy, scipy and faster-whisper (sound synthesis and timestamps).
@@ -20,7 +22,7 @@ Tell the user, in one short list, what is being installed and why: ffmpeg (video
 | ffmpeg + ffprobe | `winget install --id Gyan.FFmpeg -e` (then open a new terminal) | `brew install ffmpeg` | `sudo apt-get install -y ffmpeg` |
 | Node.js ≥ 18 | `winget install OpenJS.NodeJS.LTS` | `brew install node` | nodesource or distro package |
 | Python ≥ 3.9 | python.org installer | `brew install python` | distro package |
-| JS packages | `npm install` (inside thanhhai-2d-studio) | same | same |
+| JS packages | `npm install` (inside make-2d-video-studio) | same | same |
 | Headless Chromium | `npx playwright install chromium` | same | same (`npx playwright install-deps chromium` if libraries are missing) |
 | Python packages | `python -m pip install numpy scipy faster-whisper` | same | add `--break-system-packages` on managed Pythons |
 

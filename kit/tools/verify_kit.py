@@ -50,7 +50,7 @@ EXPECTED = {
     "examples/toon-demo/scenes/shots/05_caricatures.js": "628a2db69b9c6a58",
     "examples/toon-demo/story/bible.md": "f8b55ec159fa3d4c",
     "examples/toon-demo/story/shots.json": "6a40db6fccb3b691",
-    "package.json": "2a9377dab85ece07",
+    "package.json": "def05b35e1fe9705",
     "player.html": "5ffdd7da4a48cd4b",
     "render.mjs": "ba9779c796616616",
     "tools/beats.py": "eb42a8aef4d87584",
@@ -61,6 +61,13 @@ EXPECTED = {
     "tools/new_project.py": "7376e2571d0e0b62",
     "tools/parse_script.py": "5163cf3162b2579b",
     "tools/transcribe.py": "9811589c92da827e",
+    "tools/jobs/common.ps1": "fa0d7b835a868ba2",
+    "tools/jobs/make_srt.py": "7a85ae0def4bef88",
+    "tools/jobs/set_duration.py": "aa37b6b0b0b2a656",
+    "tools/jobs/setup.ps1": "83fc993c939e8bee",
+    "tools/jobs/setup-studio.bat": "e21e9c2154e7b03b",
+    "tools/jobs/templates/full.ps1": "773c9b2d10d249ad",
+    "tools/jobs/templates/2-full.bat": "f94938be252c32c1",
 }
 bad = 0
 for rel, want in EXPECTED.items():
