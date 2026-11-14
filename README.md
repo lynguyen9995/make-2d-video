@@ -24,6 +24,9 @@ Private repository. The studio kit has no licence of its own, so do not make thi
 | `kit/examples/toon-catalog/` | Catalog of everything the toon cast has (render with `--sheet`) + a motion test |
 
 ## Changelog
+- **0.8.0** — shared asset library (`library/` in the studio: characters, backgrounds, props, thumbnails, `catalog.html`,
+  `lessons.md`), per-video image review page (`assets/_review/review.html`, candidates A/B/C, rejected kept), retro per video,
+  anonymous people drawn as invented toons with a role label + marker.
 - **0.7.0** — news explainer mode: `kit/CLAUDE.md` (installed into the studio) with the gated 10-step workflow
   (topic pick → sourced script → voice + asset manifest → images → scenes → demo → full → package → upload → review),
   topic scope for world/finance/tech/billionaires/assets, separate thumbnail rules, YouTube upload via Studio (not the API).

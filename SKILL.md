@@ -11,7 +11,7 @@ description: >
   final MP4 in 16:9 or 9:16 at 720p to 4K. Three drawing styles: cinematic stick figures (default), a 3D cartoon
   cast, or the toon cast (outlined flat 2D cartoon with round heads, comic text, visual gags and caricatures).
 metadata:
-  version: "0.7.0"
+  version: "0.8.0"
   author: lynguyen9995
 ---
 
@@ -76,6 +76,9 @@ Scene images: no people, no text, no logos. Thumbnails: may contain people (styl
 and ≤ 4 words of text. Never upload through the YouTube Data API from an unaudited project (uploads get locked private);
 upload through the YouTube Studio website, saved Private/Scheduled, and publish only on the user's explicit go.
 In a local Claude Code session run every command yourself; write `.bat` jobs only when you have no Windows shell.
+Asset library: search `library/index.json` before making any image; candidates go to `assets/_review/` (review page:
+`tools/library/build_review.py`), approved reusable assets to `library/` (`tools/library/build_catalog.py`); never overwrite
+a candidate, rejected ones move to `_rejected/` and the redo takes the next letter. Rules in `kit/CLAUDE.md`.
 
 ## Stage 0: Video language (always first)
 If `channel.json` gives `lang`, confirm it in the one-line summary above instead of asking. Otherwise, before asking anything else, creating files, installing or editing, ask exactly one question in the user's language, for example: **"Video này dùng ngôn ngữ nào? (ví dụ: Tiếng Việt, English, 日本語…)"**. Use AskUserQuestion when available. Wait for the answer, then map it to an ISO 639-1 code (`vi`, `en`, `ja`, `ko`, `es`, `pt`, `de`, `fr`, `hi`, …). If the user already named the video language earlier in this conversation, confirm it in one line instead of asking again.

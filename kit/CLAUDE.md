@@ -49,9 +49,27 @@ Every finance video: neutral explanation, no personal investment advice, line "N
 ## Picture rules
 - Only people who are in the news appear. No channel mascots (ongdo, nhoc) in news videos.
 - Each named person = their own toon (signature hair, glasses, outfit) + name label; no invented quotes, nothing degrading.
-  Private or unnamed people stay anonymous (generic toon or silhouette + role label).
+  Private or unnamed people are STILL DRAWN, but as an invented toon that does not resemble the real person, with a role label
+  (e.g. "suspected spy (reported)") and one consistent marker (colour badge / icon) so viewers can follow them across shots.
+  The marker identifies their ROLE in the story, never the real person (no copying their real hair, face or clothes).
 - VIDEO SCENES — backgrounds and props: Google Flow or the user's own image AI; flat vector cartoon, thick black outlines,
   NO people, NO text, NO logos, 16:9. Characters, text, numbers, charts, effects: code. 3D hero props: three.js + bloom.
 - THUMBNAIL (different rules): may be made with Flow / the user's own image AI and MAY contain people and text.
   Keep public figures stylised (cartoon/illustration), never a photorealistic fake photo of a real person; text ≤ 4 big words,
   high contrast; no real company logos; must match the video (no misleading claims). Same look as the first frame.
+
+## Asset library (library/) and image review
+- Before making any image or character, search `library/index.json` (tags, title, category). Reuse when it fits.
+- Layout: `library/characters/{business,politics,finance,generic}/`, `library/backgrounds/{office,government,finance,tech,city,home,world}/`,
+  `library/props/{documents,money,tech,legal,business}/`, `library/thumbnails/`. Add a new category folder only when none fits.
+- Names: `<char|bg|prop|thumb>-<what>-<NN>` + a sidecar `.json` (id, type, category, title, tags, tool, prompt, created,
+  used_in, status, notes). Characters are code (TR.CAST); their `.json` holds the cast id + features (+ optional `<id>-sheet.png`).
+- New candidates go to `projects/<video>/assets/_review/<asset-id>-<A|B|C>.<ext>` (+ `.json` with prompt and tool). Run
+  `python -I tools/library/build_review.py projects/<video>` and open `assets/_review/review.html` for the user.
+- The user replies in one line (e.g. `bg-diner-01 B, prop-envelope-01 redo: lid missing`). Picked → copy to `assets/` (+ to
+  `library/` if reusable, status approved, then `python -I tools/library/build_catalog.py`).
+- Never overwrite or delete a candidate. A wrong one is moved to `assets/_review/_rejected/` with `status: rejected` and the
+  reason in its `.json`; the redo gets the next letter (C, D…) and its prompt fixes that reason. A changed library asset is a new
+  version (`-02`), the old one is marked `superseded`. Deleting rejected files happens only when the user asks to clean up.
+- Retro: after publishing, fill `projects/<video>/story/retro.md` (numbers + went well / badly / change next time) and add a
+  short block to `library/lessons.md`. Read `library/lessons.md` at steps 0 and 1.

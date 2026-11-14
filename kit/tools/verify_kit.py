@@ -7,7 +7,9 @@ Prints MISMATCH/MISSING for any file that differs from the tested version; copy 
 import hashlib, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXPECTED = {
-    "CLAUDE.md": "c0c452e77291c11e",
+    "tools/library/build_catalog.py": "d99f7625a003e8a1",
+    "tools/library/build_review.py": "d9c43bb311ff5ba8",
+    "CLAUDE.md": "74f3c5234f9681dc",
     "audio/dsp.py": "589d305d94d8acc3",
     "audio/mix.py": "a48273c523b68c3b",
     "audio/music.py": "2fb3ce1df2fe5c7d",
