@@ -11,7 +11,7 @@ description: >
   final MP4 in 16:9 or 9:16 at 720p to 4K. Three drawing styles: cinematic stick figures (default), a 3D cartoon
   cast, or the toon cast (outlined flat 2D cartoon with round heads, comic text, visual gags and caricatures).
 metadata:
-  version: "0.8.0"
+  version: "0.8.1"
   author: lynguyen9995
 ---
 

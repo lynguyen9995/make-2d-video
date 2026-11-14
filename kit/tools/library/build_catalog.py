@@ -1,6 +1,7 @@
 """tools/library/build_catalog.py — rebuild library/catalog.html + library/index.json from library/**.
 
   python -I tools/library/build_catalog.py            (run from the studio root)
+On a fresh install it also creates the empty library/ folder tree and lessons.md.
 
 Every asset file (jpg/png) in library/ should have a sidecar <same name>.json:
   {"id": "bg-boardroom-01", "type": "background|prop|character|thumbnail", "category": "office",
@@ -12,9 +13,24 @@ import html, json, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LIB = os.path.join(ROOT, "library")
 IMG = (".jpg", ".jpeg", ".png", ".webp")
+SKELETON = ["characters/business", "characters/politics", "characters/finance", "characters/generic",
+            "backgrounds/office", "backgrounds/government", "backgrounds/finance", "backgrounds/tech",
+            "backgrounds/city", "backgrounds/home", "backgrounds/world",
+            "props/documents", "props/money", "props/tech", "props/legal", "props/business", "thumbnails"]
+
+
+def ensure_skeleton():
+    """Create the library folders (and an empty lessons.md) on a fresh install. Never touches existing files."""
+    for d in SKELETON:
+        os.makedirs(os.path.join(LIB, *d.split("/")), exist_ok=True)
+    lessons = os.path.join(LIB, "lessons.md")
+    if not os.path.exists(lessons):
+        open(lessons, "w", encoding="utf-8").write("# Lessons from every video (newest first)\n\n"
+            "Claude reads this at step 0 (topic pick) and step 1 (script). One block per video, from projects/<video>/story/retro.md.\n")
 
 
 def main():
+    ensure_skeleton()
     items = []
     for dp, _, files in os.walk(LIB):
         for f in sorted(files):

@@ -27,7 +27,9 @@ Tell the user, in one short list, what is being installed and why: ffmpeg (video
 ## 4. Check and self-test
 1. `python tools/doctor.py`. Use `python3` where `python` isn't Python 3, and `py -3` on some Windows setups. Repeat until every line is OK. `python tools/doctor.py --install` runs the npm, playwright and pip fixes automatically.
 2. Self-test: `node render.mjs --project examples/reaction-time --sheet --scale 0.3`. It should write `examples/reaction-time/build/sheets/sheet_01.png` with 14 finished frames (café scenes, giant faces, a 3D orbit, blueprint charts, a title card) and print no errors. Open the PNG to confirm, then delete `examples/reaction-time/build/`. For the toon cast, also run `node render.mjs --project examples/toon-demo --sheet --scale 0.3` (6 frames: classroom, handwriting card, office, split screen, 3D chip, caricatures).
-3. Whisper downloads its model the first time it runs (~75 MB for `base`, ~500 MB for `small`). That needs internet access to huggingface.co.
+3. Create the asset library: `python -I tools/library/build_catalog.py` (makes `library/` with its category folders,
+   `lessons.md` and an empty `catalog.html`; safe to re-run, never touches existing files).
+4. Whisper downloads its model the first time it runs (~75 MB for `base`, ~500 MB for `small`). That needs internet access to huggingface.co.
 
 ## Notes
 - On Linux servers and the Cowork VM there's no GPU. Chromium uses SwiftShader automatically (`--gl swiftshader` is the Linux default), so everything works, just slower.

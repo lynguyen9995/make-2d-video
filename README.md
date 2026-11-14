@@ -24,6 +24,7 @@ Private repository. The studio kit has no licence of its own, so do not make thi
 | `kit/examples/toon-catalog/` | Catalog of everything the toon cast has (render with `--sheet`) + a motion test |
 
 ## Changelog
+- **0.8.1** — `tools/library/build_catalog.py` creates the empty `library/` tree on a fresh install (install step 4.3).
 - **0.8.0** — shared asset library (`library/` in the studio: characters, backgrounds, props, thumbnails, `catalog.html`,
   `lessons.md`), per-video image review page (`assets/_review/review.html`, candidates A/B/C, rejected kept), retro per video,
   anonymous people drawn as invented toons with a role label + marker.
