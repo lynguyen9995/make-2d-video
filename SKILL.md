@@ -1,7 +1,7 @@
 ---
 name: make-2d-video
 description: >
-  This skill should be used when the user wants a narrated animated video in the Thanh Hai Learn AI 2D style
+  This skill should be used when the user wants a narrated animated video in the make-2d-video style
   (cinematic stick figures with rim light, moody 2.5D sets, giant face close-ups, freeze-frames,
   data overlays, blueprint diagrams and low-poly 3D shots), e.g. "make a 2D video from this voiceover",
   "animate my script", "turn this narration into a stick figure video", "make a What If video", "make a cartoon explainer like Paper Billions",
@@ -12,10 +12,10 @@ description: >
   cast, or the toon cast (outlined flat 2D cartoon with round heads, comic text, visual gags and caricatures).
 metadata:
   version: "0.6.0"
-  author: Thanh Hai Learn AI
+  author: lynguyen9995
 ---
 
-# Thanh Hai Learn AI 2D Studio: full video pipeline
+# make-2d-video studio: full video pipeline
 
 Turn a voiceover (plus an optional script) into a finished MP4 where every frame is drawn by code (HTML canvas + Three.js), captured frame by frame in headless Chromium and encoded with ffmpeg. No image or video generation models are used, so characters stay consistent and text stays crisp. Invent the visuals fresh for every script; only the style is fixed.
 

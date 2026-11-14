@@ -1,6 +1,6 @@
 # make-2d-video (Claude Code skill)
 
-Personal copy of the **Thanh Hai Learn AI 2D Studio** skill for Claude Code: narrated videos where every frame is drawn
+**make-2d-video** — Claude Code skill for narrated videos where every frame is drawn
 by code (HTML canvas + Three.js), rendered frame by frame in headless Chromium and encoded with ffmpeg.
 
 Private repository. The studio kit has no licence of its own, so do not make this repository public.
@@ -23,7 +23,7 @@ Private repository. The studio kit has no licence of its own, so do not make thi
 | `kit/examples/toon-catalog/` | Catalog of everything the toon cast has (render with `--sheet`) + a motion test |
 
 ## Changelog
-- **0.6.0** — studio folder renamed `thanhhai-2d-studio/` → `make-2d-video-studio/` (rename old installs); each video is one
+- **0.6.0** — studio is installed as `make-2d-video-studio/`; each video is one
   self-contained folder with its own `jobs/`; shared Windows job helpers in `tools/jobs/` (logs + status files, SRT, duration, setup);
   rule: news videos show only people in the story, each as their own labelled toon, no channel mascots.
 - **0.5.0** — toon: lively motion (`act`), audio-driven lip sync (`tools/envelope.py`, `voice`, `speak`), 3/4 view, 2 new expressions,

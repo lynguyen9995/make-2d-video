@@ -1,4 +1,4 @@
-# Style bible: the Thanh Hai Learn AI 2D look
+# Style bible: the make-2d-video look
 
 Follow this closely. It is the only description of the target look; no reference images are available.
 

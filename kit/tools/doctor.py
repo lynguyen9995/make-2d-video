@@ -53,7 +53,7 @@ for mod, pipname in [("numpy", "numpy"), ("scipy", "scipy"), ("faster_whisper", 
     ok(f"python: {pipname}", importlib.util.find_spec(mod) is not None, "", f"\"{PY}\" -m pip install {pipname}" + (" --break-system-packages" if OS == "Linux" else ""))
 ok(f"python >= 3.9", sys.version_info >= (3, 9), sys.version.split()[0], "install Python 3.10+ from https://python.org")
 
-print("\nThanh Hai Learn AI 2D Studio — environment check\n")
+print("\nmake-2d-video studio — environment check\n")
 for a, b in rows: print(f"  {a:45s} {b}")
 gpu = "unknown"
 try: gpu = "NVIDIA GPU found" if shutil.which("nvidia-smi") else "no NVIDIA GPU (CPU render / transcription — slower, works fine)"

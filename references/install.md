@@ -8,8 +8,6 @@ The studio is a small Node + Python toolkit that ships inside this plugin, in th
 
 ## 2. Choose the workspace and copy
 - Use the user's connected project folder if there is one, otherwise the current working directory. Create `make-2d-video-studio/` there.
-- Older installs used the folder name `thanhhai-2d-studio/`. If that exists and `make-2d-video-studio/` doesn't, ask the user to rename it
-  (it is the same studio; nothing inside depends on the folder name), then continue with it.
 - If `make-2d-video-studio/` already exists with `render.mjs` inside, it's already installed. Skip to step 4 (doctor), and never overwrite the user's `projects/` folder.
 - Copy all of `kit/` into it: `cp -r "<kit>/." make-2d-video-studio/` (bash) or `Copy-Item -Recurse "<kit>\*" make-2d-video-studio\` (PowerShell).
 - Run `python tools/verify_kit.py` inside `make-2d-video-studio/`. It must report every file verified (61/61 in v0.6.0). If anything is missing or mismatched, copy those files again.
